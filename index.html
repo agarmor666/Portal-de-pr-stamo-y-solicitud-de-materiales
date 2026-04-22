@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de materiales - CEIP Bartolomé Flores</title>
+  <style>
+    :root { --bg:#f8fafc; --card:#ffffff; --text:#1e293b; --muted:#64748b; --border:#e2e8f0; --primary:#0f172a; --ok-bg:#dcfce7; --ok-text:#166534; --warn-bg:#fef3c7; --warn-text:#92400e; --bad-bg:#ffe4e6; --bad-text:#be123c; }
+    * { box-sizing:border-box; } body { margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--text); }
+    .container { max-width:1280px; margin:0 auto; padding:24px; }
+    header { position:sticky; top:0; background:rgba(255,255,255,.96); border-bottom:1px solid var(--border); z-index:20; }
+    .header-inner { max-width:1280px; margin:0 auto; padding:20px 24px; display:flex; justify-content:space-between; gap:16px; align-items:center; flex-wrap:wrap; }
+    h1 { margin:4px 0 0; font-size:2rem; } h2 { margin:0 0 8px; font-size:1.6rem; } h3 { margin:0; font-size:1.45rem; } p { margin:0; line-height:1.5; }
+    .muted { color:var(--muted); } .btn { display:inline-block; padding:10px 16px; border-radius:16px; text-decoration:none; font-weight:600; border:1px solid var(--border); color:var(--text); background:white; margin-left:8px; }
+    .btn.primary { background:var(--primary); color:white; border-color:var(--primary); }
+    .grid-top { display:grid; grid-template-columns:2fr 1fr; gap:24px; margin:24px 0 32px; } .card { background:var(--card); border:1px solid var(--border); border-radius:24px; padding:24px; }
+    .stats { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:20px; } .stat { background:var(--bg); border:1px solid var(--border); border-radius:18px; padding:16px; } .stat strong { font-size:1.6rem; display:block; }
+    .categoria { margin-bottom:28px; overflow:hidden; border-radius:24px; border:1px solid var(--border); background:var(--card); }
+    .categoria-head { padding:22px 24px; color:white; } .categoria-body { padding:24px; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:16px; }
+    .item { background:var(--bg); border:1px solid var(--border); border-radius:18px; padding:16px; } .item-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:12px; }
+    .badge { font-size:.8rem; font-weight:700; border-radius:999px; padding:6px 10px; white-space:nowrap; }
+    .disponible { background:var(--ok-bg); color:var(--ok-text); } .reservado { background:var(--warn-bg); color:var(--warn-text); } .prestado { background:var(--bad-bg); color:var(--bad-text); }
+    .item h4 { margin:0; font-size:1rem; line-height:1.35; } .meta p { margin-top:6px; font-size:.95rem; color:var(--muted); } .meta strong { color:var(--text); }
+    .actions { margin-top:12px; } .actions button { width:100%; border:0; background:var(--primary); color:white; padding:10px 14px; border-radius:14px; font-weight:700; cursor:pointer; }
+    .normas ul { padding-left:18px; margin:12px 0 0; } .normas li { margin:10px 0; color:var(--muted); }
+    @media (max-width:900px) { .grid-top { grid-template-columns:1fr; } .stats { grid-template-columns:1fr; } h1 { font-size:1.6rem; } }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <div class="muted" style="font-size:.9rem;font-weight:700;">CEIP · Portal interno</div>
+        <h1>Portal de préstamo y solicitud de materiales</h1>
+        <p class="muted">Espacio para consultar recursos del centro, comprobar su disponibilidad y solicitar su uso para actividades de aula.</p>
+      </div>
+      <div>
+        <a class="btn primary" href="#catalogo">Ver catálogo</a>
+        <a class="btn" href="#normas">Normas</a>
+      </div>
+    </div>
+  </header>
+  <main class="container">
+    <section class="grid-top">
+      <div class="card">
+        <h2>¿Para qué sirve este portal?</h2>
+        <p class="muted">Este catálogo permite centralizar el inventario de materiales del centro, organizar su préstamo y facilitar al profesorado la localización de recursos didácticos. Se ha actualizado con portátiles, robótica, impresión 3D, material audiovisual y recursos de Matemáticas.</p>
+        <div class="stats">
+          <div class="stat"><strong>3</strong><span class="muted">Categorías</span></div>
+          <div class="stat"><strong>100+</strong><span class="muted">Recursos inventariados</span></div>
+          <div class="stat"><strong>1</strong><span class="muted">Archivo HTML listo</span></div>
+        </div>
+      </div>
+      <aside id="normas" class="card normas">
+        <h2>Normas básicas de préstamo</h2>
+        <ul>
+          <li>La solicitud debe realizarse con antelación suficiente.</li>
+          <li>El material deberá devolverse en el plazo indicado y en buen estado.</li>
+          <li>Cualquier incidencia se comunicará al equipo directivo o a la persona responsable del inventario.</li>
+          <li>Las reservas quedan sujetas a disponibilidad y orden de solicitud.</li>
+        </ul>
+      </aside>
+    </section>
+    <section id="catalogo">
+      <div class="categoria">
+        <div class="categoria-head" style="background: linear-gradient(90deg, #059669, #14b8a6);">
+          <div style="display:flex;gap:12px;align-items:center;"><div style="font-size:2rem;">🧑‍💻</div><div><h3>Portátiles y carros del centro</h3><p style="opacity:.92;">Inventario inicial de portátiles organizados por carros y ubicaciones, con préstamos puntuales ya registrados.</p></div></div>
+        </div>
+        <div class="categoria-body">
+          <article class="item"><div class="item-head"><h4>Carro nº 5 Portátiles Endesa</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Profesorado</p><p><strong>Disponibles:</strong> 12</p><p><strong>Ubicación:</strong> Sala de Profesores</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 3 Microordenador portátil aula</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 24</p><p><strong>Ubicación:</strong> Primera planta. Aula de Mª Cruz</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 1 Portátiles alumnado</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> 6º A y 5º A</p><p><strong>Disponibles:</strong> 24</p><p><strong>Ubicación:</strong> Segunda planta. Grupo 6º B</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 2 Portátiles alumnado</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> 6º A y 5º A</p><p><strong>Disponibles:</strong> 24</p><p><strong>Ubicación:</strong> Segunda planta</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 4 Proyecto STEAM: Robótica aplicada al aula</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Alumnado</p><p><strong>Disponibles:</strong> 16</p><p><strong>Ubicación:</strong> Primera planta. Aula de Música</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 6 Microordenador Chrome portátil aula</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> 1º ciclo</p><p><strong>Disponibles:</strong> 25</p><p><strong>Ubicación:</strong> Planta baja. Aula J. Carlos</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Carro nº 7 Microordenador Chrome portátil aula</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> 1º ciclo</p><p><strong>Disponibles:</strong> 25</p><p><strong>Ubicación:</strong> Primera planta. Aula Mireia</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+        </div>
+      </div>
+      <div class="categoria">
+        <div class="categoria-head" style="background: linear-gradient(90deg, #2563eb, #06b6d4);">
+          <div style="display:flex;gap:12px;align-items:center;"><div style="font-size:2rem;">🔢</div><div><h3>Material manipulativo de Matemáticas</h3><p style="opacity:.92;">Recursos para numeración, cálculo, geometría, magnitudes y resolución de problemas.</p></div></div>
+        </div>
+        <div class="categoria-body">
+          <article class="item"><div class="item-head"><h4>Regletas</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Primaria</p><p><strong>Disponibles:</strong> 4</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Bloques base diez</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Primaria</p><p><strong>Disponibles:</strong> 3</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Ábacos</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Infantil y 1.º ciclo</p><p><strong>Disponibles:</strong> 5</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Geoplanos</h4><span class="badge reservado">Reservado</span></div><div class="meta"><p><strong>Nivel:</strong> 2.º y 3.º ciclo</p><p><strong>Disponibles:</strong> 2</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Tangram</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Primaria</p><p><strong>Disponibles:</strong> 6</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Policubos</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Infantil y Primaria</p><p><strong>Disponibles:</strong> 3</p><p><strong>Ubicación:</strong> Armario de Matemáticas</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+        </div>
+      </div>
+      <div class="categoria">
+        <div class="categoria-head" style="background: linear-gradient(90deg, #7c3aed, #d946ef);">
+          <div style="display:flex;gap:12px;align-items:center;"><div style="font-size:2rem;">💻</div><div><h3>Recursos TIC y nuevas tecnologías</h3><p style="opacity:.92;">Dotación tecnológica del centro para uso docente, aulas digitales y actividades de aprendizaje con soporte digital.</p></div></div>
+        </div>
+        <div class="categoria-body">
+          <article class="item"><div class="item-head"><h4>Panel interactivo SMART BOARD MX075-V5</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 9</p><p><strong>Ubicación:</strong> Aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Soporte fijo SMART WSE-360</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 8</p><p><strong>Ubicación:</strong> Aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Soporte móvil SMART FSE-360</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Centro</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>OPS SMART PCM12-1</h4><span class="badge reservado">Reservado</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 0</p><p><strong>Ubicación:</strong> No entregado</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Impresora 3D ADI 1 — 10000911785B325HQVR</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Impresora 3D ADI 2 — 10000911785B325HROF</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Impresora 3D ADI 3 — 10000911785B325HUQJ</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Impresora 3D ADI 4 — 10000911805B325HDCR</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 1 — UK02448044670 / 8CC5120MKG</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 2 — UK02448044757 / 8CC5120XVQ</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 3 — UK02448044913 / 8CC5120XSM</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 4 — UK02448044915 / 8CC51117MK</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 5 — UK02506044381 / 8CC4501QB6</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>PC sobremesa 6 — UK02506044686 / 8CC4501QDV</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Dotación MRR aulas digitales</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Complemento audiovisual — código 0345/1</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Material audiovisual</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+          <article class="item"><div class="item-head"><h4>Complemento taller radio — código 0348/1</h4><span class="badge disponible">Disponible</span></div><div class="meta"><p><strong>Nivel:</strong> Centro</p><p><strong>Disponibles:</strong> 1</p><p><strong>Ubicación:</strong> Taller de radio</p></div><div class="actions"><button>Solicitar este material</button></div></article>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

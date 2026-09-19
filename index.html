@@ -165,8 +165,10 @@ const materialReservaEl = document.getElementById("materialReserva");
 const formReservaEl = document.getElementById("form-reserva");
 const formMsgEl = document.getElementById("form-msg");
 
-document.getElementById("stat-categorias").textContent = categorias.length.toString();
-document.getElementById("stat-recursos").textContent = categorias.reduce((acc, c) => acc + c.items.length, 0).toString();
+const statCategoriasEl = document.getElementById("stat-categorias");
+const statRecursosEl = document.getElementById("stat-recursos");
+if (statCategoriasEl) statCategoriasEl.textContent = categorias.length.toString();
+if (statRecursosEl) statRecursosEl.textContent = categorias.reduce((acc, c) => acc + c.items.length, 0).toString();
 
 function poblarFiltros() {
   categorias.forEach(cat => {

@@ -284,8 +284,8 @@ async function enviarReserva(event) {
   event.preventDefault();
   formMsgEl.textContent = "";
 
-  if (APPS_SCRIPT_URL.includes("PEGA_AQUI")) {
-    formMsgEl.textContent = "Falta pegar la URL del despliegue de Google Apps Script en la constante APPS_SCRIPT_URL.";
+  if (!APPS_SCRIPT_URL.startsWith("https://script.google.com/macros/s/")) {
+    formMsgEl.textContent = "El servicio de registro no está configurado correctamente.";
     return;
   }
 

@@ -150,7 +150,6 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
         Pestaña: <strong>Reservas</strong>
       </p>
       <p><a class="btn btn-secondary" href="https://docs.google.com/spreadsheets/d/1WoEWYlYjmSxs4RdmG4d5_r3wMULxTWSt6IuaOwa70I8/edit#gid=1477532422" target="_blank" rel="noopener noreferrer">Abrir hoja de reservas</a></p>
-      <p><strong>No es necesario indicar un correo electrónico.</strong></p>
       <p class="muted" style="margin-top:12px;">Al finalizar aparecerá un mensaje confirmando si la reserva se ha guardado correctamente.</p>
     </article>
   </section>
@@ -288,6 +287,12 @@ async function enviarReserva(event) {
   }
 
   const submitButton = formReservaEl.querySelector(".btn-submit");
+  const ahora = new Date();
+  const dosCifras = numero => String(numero).padStart(2, "0");
+  const fechaHoraLocal =
+    `${dosCifras(ahora.getDate())}/${dosCifras(ahora.getMonth() + 1)}/${ahora.getFullYear()} ` +
+    `${dosCifras(ahora.getHours())}:${dosCifras(ahora.getMinutes())}`;
+
   const payload = {
     nombreSolicitante: document.getElementById("nombreSolicitante").value.trim(),
     cursoGrupo: document.getElementById("cursoGrupo").value.trim(),
@@ -296,7 +301,9 @@ async function enviarReserva(event) {
     fechaInicio: document.getElementById("fechaInicio").value,
     duracion: document.getElementById("duracion").value,
     finalidad: document.getElementById("finalidad").value.trim(),
-    timestamp: new Date().toISOString()
+    timestamp: fechaHoraLocal,
+    estado: "Registrada",
+    estadoInterno: "Registrada"
   };
 
   try {

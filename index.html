@@ -145,7 +145,11 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 
     <article class="card">
       <h2>Registro automático</h2>
-      <p class="muted">Cada solicitud se envía directamente a la hoja de cálculo vinculada al portal.</p>
+      <p class="muted">Cada solicitud se registra en:</p>
+      <p><strong>Portal de Reserva de Materiales y Recursos</strong><br>
+        Pestaña: <strong>Reservas</strong>
+      </p>
+      <p><a class="btn btn-secondary" href="https://docs.google.com/spreadsheets/d/1WoEWYlYjmSxs4RdmG4d5_r3wMULxTWSt6IuaOwa70I8/edit#gid=1477532422" target="_blank" rel="noopener noreferrer">Abrir hoja de reservas</a></p>
       <p><strong>No es necesario indicar un correo electrónico.</strong></p>
       <p class="muted" style="margin-top:12px;">Al finalizar aparecerá un mensaje confirmando si la reserva se ha guardado correctamente.</p>
     </article>
@@ -283,6 +287,7 @@ async function enviarReserva(event) {
     return;
   }
 
+  const submitButton = formReservaEl.querySelector(".btn-submit");
   const payload = {
     nombreSolicitante: document.getElementById("nombreSolicitante").value.trim(),
     cursoGrupo: document.getElementById("cursoGrupo").value.trim(),
@@ -295,6 +300,7 @@ async function enviarReserva(event) {
   };
 
   try {
+    submitButton.disabled = true;
     formMsgEl.textContent = "Enviando reserva...";
     const response = await fetch(APPS_SCRIPT_URL, {
       method: "POST",
@@ -304,15 +310,24 @@ async function enviarReserva(event) {
     });
 
     const result = await response.json();
-    if (result.ok) {
+    const guardada =
+      result?.ok === true ||
+      result?.success === true ||
+      String(result?.result || "").toLowerCase() === "success" ||
+      String(result?.status || "").toLowerCase() === "success";
+
+    if (response.ok && guardada) {
       formReservaEl.reset();
       poblarMaterialesReserva();
-      formMsgEl.textContent = "Reserva enviada correctamente.";
+      formMsgEl.textContent = "Reserva guardada correctamente en la pestaña «Reservas».";
     } else {
-      formMsgEl.textContent = "No se pudo registrar la reserva.";
+      const detalle = result?.message ? ` ${result.message}` : "";
+      formMsgEl.textContent = `No se pudo confirmar la reserva.${detalle}`;
     }
   } catch (error) {
-    formMsgEl.textContent = "Error al enviar la reserva. Revisa la URL del script y el despliegue.";
+    formMsgEl.textContent = "Error de comunicación con el registro de reservas.";
+  } finally {
+    submitButton.disabled = false;
   }
 }
 

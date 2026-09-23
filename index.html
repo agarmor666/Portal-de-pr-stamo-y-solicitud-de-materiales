@@ -35,6 +35,7 @@ textarea{resize:vertical}
 .item .mini-btn{margin-top:12px;width:100%;background:var(--primary);color:#fff;border:none;border-radius:14px;padding:10px 12px;font-weight:700;cursor:pointer}
 .reserva-grid{margin:24px 0 40px;display:grid;grid-template-columns:1.5fr 1fr;gap:24px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px} .form-grid .full{grid-column:1 / -1} .form-msg{margin:0;min-height:24px;color:var(--muted)}
+[hidden]{display:none!important} input[readonly]{background:#f1f5f9;color:#334155} .btn:disabled,.mini-btn:disabled{opacity:.55;cursor:not-allowed}
 code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 @media (max-width:900px){.hero-grid,.reserva-grid,.tools-grid,.form-grid{grid-template-columns:1fr} .stats{grid-template-columns:1fr} h1{font-size:1.7rem}}
 </style>
@@ -102,7 +103,16 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
       <form id="form-reserva" class="form-grid">
         <div>
           <label for="nombreSolicitante">Profesorado que reserva</label>
-          <select id="nombreSolicitante" name="nombreSolicitante" required><option value="">Seleccionar docente…</option><option>Alconchel Vázquez, Carlos</option><option>Del Caño Ceballos, María</option><option>Enjuto Mena, Carolina</option><option>Fernández Marcos Donate, Raquel</option><option>Flores Ortega, Juana del Pilar</option><option>García Arnau, Mireia</option><option>García Piñero, Isabel María</option><option>Garrido Morales, Antonio Jesús</option><option>González Carrillo, Francisco</option><option>González Sanz, Nuria</option><option>Guerrero Piñero, Ana Celia</option><option>Haro Mansilla, Aladina</option><option>Jimena Quesada, Luis María</option><option>Jiménez Medina, Ana Bella</option><option>Jiménez Torres, María José</option><option>Mañas Villar, Lucía</option><option>Martínez Guerrero, Isabel María</option><option>Montoya Morales, María Luisa</option><option>Moreno Alonso, Antonia</option><option>Palomares Padilla, Pilar</option><option>Pastor Reche, Carmen Dolores</option><option>Peña Ruiz, María Cruz</option><option>Ramos Muñoz, Patricia</option><option>Rodríguez Agüero, María Isabel</option><option>Rodríguez Domínguez, Ana Belén</option><option>Rodríguez Montes, Jesús</option><option>Roldán Camenforte, Leónides</option><option>Tafur Porras, Ángela María</option><option>Teruel Ortiz, Carlos</option><option>Torres Molina, Juan Carlos</option><option>Vedia Salinas, Carmen Cristín</option><option>Velázquez Peramos, María de la Cabeza</option><option>Yanguez López-Cano, Rafael</option></select>
+          <select id="nombreSolicitante" name="nombreSolicitante" required><option value="">Seleccionar docente…</option><option value="Alconchel Vázquez, Carlos" data-email="calcvaz849@g.educaand.es">Alconchel Vázquez, Carlos</option><option value="Del Caño Ceballos, María" data-email="mcanceb660@g.educaand.es">Del Caño Ceballos, María</option><option value="Enjuto Mena, Carolina" data-email="cenjmen278@g.educaand.es">Enjuto Mena, Carolina</option><option value="Fernández Marcos Donate, Raquel" data-email="rferdon786@g.educaand.es">Fernández Marcos Donate, Raquel</option><option value="Flores Ortega, Juana del Pilar" data-email="jfloort701@g.educaand.es">Flores Ortega, Juana del Pilar</option><option value="García Arnau, Mireia" data-email="mgararn162@g.educaand.es">García Arnau, Mireia</option><option value="García Piñero, Isabel María" data-email="igarpin313@g.educaand.es">García Piñero, Isabel María</option><option value="Garrido Morales, Antonio Jesús" data-email="agarmor666@g.educaand.es">Garrido Morales, Antonio Jesús</option><option value="González Carrillo, Francisco" data-email="fgoncar937z@g.educaand.es">González Carrillo, Francisco</option><option value="González Sanz, Nuria" data-email="ngonsan348@g.educaand.es">González Sanz, Nuria</option><option value="Guerrero Piñero, Ana Celia" data-email="" data-manual-email="true">Guerrero Piñero, Ana Celia</option><option value="Haro Mansilla, Aladina" data-email="aharman938@g.educaand.es">Haro Mansilla, Aladina</option><option value="Jimena Quesada, Luis María" data-email="ljimque198@g.educaand.es">Jimena Quesada, Luis María</option><option value="Jiménez Medina, Ana Bella" data-email="ajimmed837@g.educaand.es">Jiménez Medina, Ana Bella</option><option value="Jiménez Torres, María José" data-email="mjimtor250@g.educaand.es">Jiménez Torres, María José</option><option value="Mañas Villar, Lucía" data-email="lmanvil670@g.educaand.es">Mañas Villar, Lucía</option><option value="Martínez Guerrero, Isabel María" data-email="imargue028@g.educaand.es">Martínez Guerrero, Isabel María</option><option value="Montoya Morales, María Luisa" data-email="mmonmor527@g.educaand.es">Montoya Morales, María Luisa</option><option value="Moreno Alonso, Antonia" data-email="amoralo593@g.educaand.es">Moreno Alonso, Antonia</option><option value="Palomares Padilla, Pilar" data-email="ppalpad008@g.educaand.es">Palomares Padilla, Pilar</option><option value="Pastor Reche, Carmen Dolores" data-email="cpasrec160@g.educaand.es">Pastor Reche, Carmen Dolores</option><option value="Peña Ruiz, María Cruz" data-email="mpenrui302@g.educaand.es">Peña Ruiz, María Cruz</option><option value="Ramos Muñoz, Patricia" data-email="prammun@g.educaand.es">Ramos Muñoz, Patricia</option><option value="Rodríguez Agüero, María Isabel" data-email="mrodagu309@g.educaand.es">Rodríguez Agüero, María Isabel</option><option value="Rodríguez Domínguez, Ana Belén" data-email="aroddom735@g.educaand.es">Rodríguez Domínguez, Ana Belén</option><option value="Rodríguez Montes, Jesús" data-email="jrodmon314@g.educaand.es">Rodríguez Montes, Jesús</option><option value="Roldán Camenforte, Leónides" data-email="lrolcam504@g.educaand.es">Roldán Camenforte, Leónides</option><option value="Tafur Porras, Ángela María" data-email="atafpor489@g.educaand.es">Tafur Porras, Ángela María</option><option value="Teruel Ortiz, Carlos" data-email="" data-manual-email="true">Teruel Ortiz, Carlos</option><option value="Torres Molina, Juan Carlos" data-email="jtormol069@g.educaand.es">Torres Molina, Juan Carlos</option><option value="Vedia Salinas, Carmen Cristín" data-email="cvedsal534@g.educaand.es">Vedia Salinas, Carmen Cristín</option><option value="Velázquez Peramos, María de la Cabeza" data-email="mvelper837@g.educaand.es">Velázquez Peramos, María de la Cabeza</option><option value="Yanguez López-Cano, Rafael" data-email="ryanlop580@g.educaand.es">Yanguez López-Cano, Rafael</option><option value="Ana Isabel Martínez Plaza" data-email="amarpla331@g.educaand.es">Ana Isabel Martínez Plaza — Orientación</option><option value="__otro__" data-email="">Otro personal…</option></select>
+        </div>
+        <div id="otroPersonalWrap" class="full" hidden>
+          <label for="nombreOtroPersonal">Nombre y apellidos del otro personal</label>
+          <input id="nombreOtroPersonal" name="nombreOtroPersonal" type="text" autocomplete="name">
+        </div>
+        <div class="full">
+          <label for="correoSolicitante">Correo profesional</label>
+          <input id="correoSolicitante" name="correoSolicitante" type="email" autocomplete="email" required readonly>
+          <p id="correoAyuda" class="muted" style="margin:7px 0 0;font-size:.9rem;">Se completará al seleccionar el nombre.</p>
         </div>
         <div>
           <label for="cursoGrupo">Curso, grupo o uso</label>
@@ -159,6 +169,11 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpMdt5rBVCwEy5xbw0Ur3BmDcpGcz4XXHr7A6JFkaHsVhCemE2zJjGdoVGY2nloZWPUA/exec";
 const categorias = [{"nombre": "Portátiles y carros del centro", "descripcion": "Inventario inicial de portátiles organizados por carros y ubicaciones, con préstamos puntuales ya registrados.", "icono": "🧑‍💻", "color": "emerald", "items": [{"nombre": "Carro nº 5 Portátiles Endesa", "nivel": "Profesorado", "disponibles": 12, "ubicacion": "Sala de Profesores", "estado": "Disponible"}, {"nombre": "Carro nº 3 Microordenador portátil aula", "nivel": "Centro", "disponibles": 24, "ubicacion": "Primera planta. Aula de Mª Cruz", "estado": "Disponible"}, {"nombre": "Carro nº 1 Portátiles alumnado", "nivel": "6º A y 5º A", "disponibles": 24, "ubicacion": "Segunda planta. Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 1 — CND1253QLH", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 2 — CND1253QSP", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 3 — CND1253Q7G", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 4 — CND1253R6M", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 5 — CND1253SHS", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 6 — CND1253SKN", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 7 — CND1253SMZ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 8 — CND1253STM", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 9 — CND1253STX", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 10 — CND1253SV1", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 11 — CND1253SYR", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 12 — CND1253S0Z", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 13 — CND1253S7H", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 14 — CND1253TQ4", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 15 — CND1253T5X", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 16 — CND1253T91", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 17 — CND1253VF0", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 18 — CND1253VF2", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 19 — CND1332F65", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 20 — CND1253VJ9", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 21 — CND1253VY7", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 22 — CND1253V53", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 23 — CND1253WRX", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Portátil 24 — CND1253WZF", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 1 · Segunda planta · Grupo 6º B", "estado": "Disponible"}, {"nombre": "Carro nº 2 Portátiles alumnado", "nivel": "6º A y 5º A", "disponibles": 24, "ubicacion": "Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 25 — CND1253WZT", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 26 — CND1253XJY", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 27 — CND1253XWQ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 28 — CND1253XY9", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 29 — CND1253X2Z", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 30 — CND1253X4T", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 31 — CND1253YW6", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 32 — CND1253Y0Y", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 33 — CND1253ZFM", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 34 — CND1253ZF7", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 35 — CND1253ZHJ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 36 — CND1253ZJZ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 37 — CND1253ZSJ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 38 — CND1253ZSQ", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 39 — CND1253ZVY", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 40 — CND1253ZXD", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 41 — CND1253ZZB", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 42 — CND1254001", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 43 — CND125401H", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 44 — CND1254016", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 45 — CND125402Y", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 46 — CND125405N", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 47 — CND1254067", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Portátil 48 — CND125407W", "nivel": "6º A y 5º A", "disponibles": 1, "ubicacion": "Carro nº 2 · Segunda planta", "estado": "Disponible"}, {"nombre": "Carro nº 4 Proyecto STEAM: Robótica aplicada al aula", "nivel": "Alumnado", "disponibles": 16, "ubicacion": "Primera planta. Aula de Música", "estado": "Disponible"}, {"nombre": "Carro nº 4 · Portátil 1 — NXVPREB0031032DC5D7600", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Carro nº 4 · Aula de Música", "estado": "Prestado"}, {"nombre": "Carro nº 4 · Portátil 2 — NXVPREB0031032F1837600", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Carro nº 4 · Aula de Música", "estado": "Prestado"}, {"nombre": "Carro nº 6 Microordenador Chrome portátil aula", "nivel": "1º ciclo", "disponibles": 25, "ubicacion": "Planta baja. Aula J. Carlos", "estado": "Disponible"}, {"nombre": "Carro nº 6 · Chromebook extra 24 — MP28CYQ3", "nivel": "1º ciclo", "disponibles": 1, "ubicacion": "Actualmente en carro nº 1 · 2ª planta", "estado": "Prestado"}, {"nombre": "Carro nº 6 · Chromebook extra 25 — MP28D2H4", "nivel": "1º ciclo", "disponibles": 1, "ubicacion": "Actualmente en carro nº 2 · 2ª planta", "estado": "Prestado"}, {"nombre": "Carro nº 7 Microordenador Chrome portátil aula", "nivel": "1º ciclo", "disponibles": 25, "ubicacion": "Primera planta. Aula Mireia", "estado": "Disponible"}, {"nombre": "Carro nº 7 · Chromebook extra 25 — MP28CYN3", "nivel": "1º ciclo", "disponibles": 1, "ubicacion": "Actualmente en carro nº 2 · 2ª planta", "estado": "Prestado"}, {"nombre": "Kits avanzados de robótica", "nivel": "Proyecto STEAM", "disponibles": 9, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Macqueen con Microbit", "nivel": "Proyecto STEAM", "disponibles": 12, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Kit básico STEAM sin catalogar", "nivel": "Proyecto STEAM", "disponibles": 13, "ubicacion": "Pendiente de catalogación", "estado": "Disponible"}, {"nombre": "Fundas color negro para micro:bit", "nivel": "Proyecto STEAM", "disponibles": 25, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Kits de robótica Retotech Endesa", "nivel": "Retotech Endesa", "disponibles": 10, "ubicacion": "Robótica Retotech", "estado": "Disponible"}, {"nombre": "Impresora 3D Proyecto STEAM", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Impresora 3D Retotech", "nivel": "Retotech Endesa", "disponibles": 1, "ubicacion": "Robótica Retotech", "estado": "Disponible"}, {"nombre": "Empujador para Maqueen Lite", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Pala cargadora para Maqueen Lite", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Pinzas escarabajo para Maqueen Lite", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Montacargas para Maqueen Lite", "nivel": "Proyecto STEAM", "disponibles": 1, "ubicacion": "Robótica aplicada al aula", "estado": "Disponible"}, {"nombre": "Pack plan docente y 9 tapetes Bee-bot", "nivel": "Infantil y Primaria", "disponibles": 1, "ubicacion": "Robótica educativa", "estado": "Disponible"}, {"nombre": "Bee-Bot robot infantil programable", "nivel": "Infantil y Primaria", "disponibles": 4, "ubicacion": "Robótica educativa", "estado": "Disponible"}]}, {"nombre": "Material manipulativo de Matemáticas", "descripcion": "Recursos para numeración, cálculo, geometría, magnitudes y resolución de problemas.", "icono": "🔢", "color": "blue", "items": [{"nombre": "Regletas", "nivel": "Primaria", "disponibles": 4, "ubicacion": "Armario de Matemáticas", "estado": "Disponible"}, {"nombre": "Bloques base diez", "nivel": "Primaria", "disponibles": 3, "ubicacion": "Armario de Matemáticas", "estado": "Disponible"}, {"nombre": "Ábacos", "nivel": "Infantil y 1.º ciclo", "disponibles": 5, "ubicacion": "Armario de Matemáticas", "estado": "Disponible"}, {"nombre": "Geoplanos", "nivel": "2.º y 3.º ciclo", "disponibles": 2, "ubicacion": "Armario de Matemáticas", "estado": "Reservado"}, {"nombre": "Tangram", "nivel": "Primaria", "disponibles": 6, "ubicacion": "Armario de Matemáticas", "estado": "Disponible"}, {"nombre": "Policubos", "nivel": "Infantil y Primaria", "disponibles": 3, "ubicacion": "Armario de Matemáticas", "estado": "Disponible"}]}, {"nombre": "Recursos TIC y nuevas tecnologías", "descripcion": "Dotación tecnológica del centro para uso docente, aulas digitales y actividades de aprendizaje con soporte digital.", "icono": "💻", "color": "violet", "items": [{"nombre": "Panel interactivo SMART BOARD MX075-V5", "nivel": "Centro", "disponibles": 9, "ubicacion": "Aulas digitales", "estado": "Disponible"}, {"nombre": "Soporte fijo SMART WSE-360", "nivel": "Centro", "disponibles": 8, "ubicacion": "Aulas digitales", "estado": "Disponible"}, {"nombre": "Soporte móvil SMART FSE-360", "nivel": "Centro", "disponibles": 1, "ubicacion": "Centro", "estado": "Disponible"}, {"nombre": "OPS SMART PCM12-1", "nivel": "Centro", "disponibles": 0, "ubicacion": "No entregado", "estado": "Reservado"}, {"nombre": "Impresora 3D ADI 1 — 10000911785B325HQVR", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "Impresora 3D ADI 2 — 10000911785B325HROF", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "Impresora 3D ADI 3 — 10000911785B325HUQJ", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "Impresora 3D ADI 4 — 10000911805B325HDCR", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 1 — UK02448044670 / 8CC5120MKG", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 2 — UK02448044757 / 8CC5120XVQ", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 3 — UK02448044913 / 8CC5120XSM", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 4 — UK02448044915 / 8CC51117MK", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 5 — UK02506044381 / 8CC4501QB6", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "PC sobremesa 6 — UK02506044686 / 8CC4501QDV", "nivel": "Centro", "disponibles": 1, "ubicacion": "Dotación MRR aulas digitales", "estado": "Disponible"}, {"nombre": "Complemento audiovisual — código 0345/1", "nivel": "Centro", "disponibles": 1, "ubicacion": "Material audiovisual", "estado": "Disponible"}, {"nombre": "Complemento taller radio — código 0348/1", "nivel": "Centro", "disponibles": 1, "ubicacion": "Taller de radio", "estado": "Disponible"}]}];
 
+categorias.forEach(cat => cat.items.forEach(item => {
+  item.estadoBase = item.estado;
+  item.disponiblesBase = item.disponibles;
+}));
+
 const catalogoEl = document.getElementById("catalogo");
 const busquedaEl = document.getElementById("busqueda");
 const filtroCategoriaEl = document.getElementById("filtro-categoria");
@@ -167,11 +182,72 @@ const categoriaReservaEl = document.getElementById("categoriaReserva");
 const materialReservaEl = document.getElementById("materialReserva");
 const formReservaEl = document.getElementById("form-reserva");
 const formMsgEl = document.getElementById("form-msg");
+const nombreSolicitanteEl = document.getElementById("nombreSolicitante");
+const nombreOtroPersonalEl = document.getElementById("nombreOtroPersonal");
+const otroPersonalWrapEl = document.getElementById("otroPersonalWrap");
+const correoSolicitanteEl = document.getElementById("correoSolicitante");
+const correoAyudaEl = document.getElementById("correoAyuda");
 
 const statCategoriasEl = document.getElementById("stat-categorias");
 const statRecursosEl = document.getElementById("stat-recursos");
 if (statCategoriasEl) statCategoriasEl.textContent = categorias.length.toString();
 if (statRecursosEl) statRecursosEl.textContent = categorias.reduce((acc, c) => acc + c.items.length, 0).toString();
+
+function actualizarDatosSolicitante() {
+  const opcion = nombreSolicitanteEl.selectedOptions[0];
+  const esOtro = nombreSolicitanteEl.value === "__otro__";
+  const correoAsociado = opcion?.dataset.email || "";
+
+  otroPersonalWrapEl.hidden = !esOtro;
+  nombreOtroPersonalEl.required = esOtro;
+  if (!esOtro) nombreOtroPersonalEl.value = "";
+
+  correoSolicitanteEl.value = correoAsociado;
+  correoSolicitanteEl.readOnly = Boolean(correoAsociado);
+  correoSolicitanteEl.placeholder = correoAsociado ? "" : "Escribe el correo profesional";
+  correoAyudaEl.textContent = correoAsociado
+    ? "Correo asociado automáticamente al nombre seleccionado."
+    : (nombreSolicitanteEl.value ? "Introduce el correo profesional de esta persona." : "Se completará al seleccionar el nombre.");
+}
+
+function nombreSolicitanteFinal() {
+  return nombreSolicitanteEl.value === "__otro__"
+    ? nombreOtroPersonalEl.value.trim()
+    : nombreSolicitanteEl.value.trim();
+}
+
+function marcarMaterialReservado(nombreMaterial) {
+  categorias.forEach(cat => cat.items.forEach(item => {
+    if (item.nombre === nombreMaterial) {
+      item.estado = "Reservado";
+      item.disponibles = 0;
+    }
+  }));
+  renderCatalogo();
+}
+
+async function cargarDisponibilidad() {
+  try {
+    const response = await fetch(`${APPS_SCRIPT_URL}?action=availability&t=${Date.now()}`, { cache: "no-store" });
+    const data = await response.json();
+    const noDisponibles = new Set(data.unavailable || data.noDisponibles || []);
+
+    categorias.forEach(cat => cat.items.forEach(item => {
+      if (noDisponibles.has(item.nombre)) {
+        item.estado = "Reservado";
+        item.disponibles = 0;
+      } else {
+        item.estado = item.estadoBase;
+        item.disponibles = item.disponiblesBase;
+      }
+    }));
+
+    renderCatalogo();
+    poblarMaterialesReserva();
+  } catch (error) {
+    console.warn("No se pudo actualizar la disponibilidad en tiempo real.", error);
+  }
+}
 
 function poblarFiltros() {
   categorias.forEach(cat => {
@@ -200,7 +276,8 @@ function poblarMaterialesReserva() {
     cat.items.forEach(item => {
       const opt = document.createElement("option");
       opt.value = item.nombre;
-      opt.textContent = item.nombre;
+      opt.disabled = item.estado !== "Disponible";
+      opt.textContent = item.estado === "Disponible" ? item.nombre : `${item.nombre} — no disponible`;
       materialReservaEl.appendChild(opt);
     });
   });
@@ -249,6 +326,7 @@ function renderCatalogo() {
         const article = document.createElement("article");
         article.className = "item";
         const estadoClass = item.estado.toLowerCase();
+        const sePuedeReservar = item.estado === "Disponible";
         article.innerHTML = `
           <div class="item-head">
             <h4>${item.nombre}</h4>
@@ -259,7 +337,7 @@ function renderCatalogo() {
             <p><strong>Disponibles:</strong> ${item.disponibles}</p>
             <p><strong>Ubicación:</strong> ${item.ubicacion}</p>
           </div>
-          <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(cat.nombre)}">Reservar este material</button>
+          <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(cat.nombre)}" ${sePuedeReservar ? "" : "disabled"}>${sePuedeReservar ? "Reservar este material" : "No disponible"}</button>
         `;
         body.appendChild(article);
       });
@@ -287,6 +365,14 @@ async function enviarReserva(event) {
   }
 
   const submitButton = formReservaEl.querySelector(".btn-submit");
+  const nombreFinal = nombreSolicitanteFinal();
+  const correoFinal = correoSolicitanteEl.value.trim();
+
+  if (!nombreFinal || !correoFinal) {
+    formMsgEl.textContent = "Selecciona la persona solicitante e indica un correo profesional válido.";
+    return;
+  }
+
   const ahora = new Date();
   const dosCifras = numero => String(numero).padStart(2, "0");
   const fechaHoraLocal =
@@ -294,7 +380,9 @@ async function enviarReserva(event) {
     `${dosCifras(ahora.getHours())}:${dosCifras(ahora.getMinutes())}`;
 
   const payload = {
-    nombreSolicitante: document.getElementById("nombreSolicitante").value.trim(),
+    action: "submitReservation",
+    nombreSolicitante: nombreFinal,
+    correoSolicitante: correoFinal,
     cursoGrupo: document.getElementById("cursoGrupo").value.trim(),
     categoriaReserva: categoriaReservaEl.value,
     materialReserva: materialReservaEl.value,
@@ -302,8 +390,8 @@ async function enviarReserva(event) {
     duracion: document.getElementById("duracion").value,
     finalidad: document.getElementById("finalidad").value.trim(),
     timestamp: fechaHoraLocal,
-    estado: "Registrada",
-    estadoInterno: "Registrada"
+    estado: "Pendiente de aceptación",
+    estadoInterno: "Pendiente de aceptación"
   };
 
   try {
@@ -324,9 +412,11 @@ async function enviarReserva(event) {
       String(result?.status || "").toLowerCase() === "success";
 
     if (response.ok && guardada) {
+      marcarMaterialReservado(payload.materialReserva);
       formReservaEl.reset();
+      actualizarDatosSolicitante();
       poblarMaterialesReserva();
-      formMsgEl.textContent = "Reserva guardada correctamente en la pestaña «Reservas».";
+      formMsgEl.textContent = "Solicitud enviada. Queda pendiente de aceptación y recibirás un correo de confirmación.";
     } else {
       const detalle = result?.message ? ` ${result.message}` : "";
       formMsgEl.textContent = `No se pudo confirmar la reserva.${detalle}`;
@@ -342,11 +432,15 @@ busquedaEl.addEventListener("input", renderCatalogo);
 filtroCategoriaEl.addEventListener("change", renderCatalogo);
 filtroEstadoEl.addEventListener("change", renderCatalogo);
 categoriaReservaEl.addEventListener("change", poblarMaterialesReserva);
+nombreSolicitanteEl.addEventListener("change", actualizarDatosSolicitante);
 formReservaEl.addEventListener("submit", enviarReserva);
 
 poblarFiltros();
+actualizarDatosSolicitante();
 poblarMaterialesReserva();
 renderCatalogo();
+cargarDisponibilidad();
+setInterval(cargarDisponibilidad, 60000);
 </script>
 </body>
 </html>

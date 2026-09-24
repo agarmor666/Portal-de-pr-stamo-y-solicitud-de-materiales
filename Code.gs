@@ -60,19 +60,25 @@ function doPost(e) {
 function submitReservation_(data) {
   const required = [
     'nombreSolicitante','correoSolicitante','cursoGrupo','categoriaReserva','materialReserva',
-    'fechaInicio','tramoInicio','fechaFin','tramoFin'
+    'fechaInicio','fechaFin'
   ];
   const missing = required.filter(function(key){return !String(data[key] || '').trim();});
   if (missing.length) return jsonResponse_({result:'error',ok:false,message:'Faltan datos obligatorios: ' + missing.join(', ')});
 
-  const startSlot = String(data.tramoInicio).trim();
-  const endSlot = String(data.tramoFin).trim();
-  if (ALLOWED_SLOTS.indexOf(startSlot) < 0 || ALLOWED_SLOTS.indexOf(endSlot) < 0) {
-    return jsonResponse_({result:'error',ok:false,message:'El tramo horario no es válido.'});
+  const sameDay = String(data.fechaInicio) === String(data.fechaFin);
+  const startSlot = sameDay ? String(data.tramoInicio || '').trim() : '';
+  const endSlot = sameDay ? String(data.tramoFin || '').trim() : '';
+
+  if (sameDay && (ALLOWED_SLOTS.indexOf(startSlot) < 0 || ALLOWED_SLOTS.indexOf(endSlot) < 0)) {
+    return jsonResponse_({result:'error',ok:false,message:'Para una reserva de un solo día debes seleccionar los tramos horarios.'});
   }
 
-  const startMs = slotDateMs_(String(data.fechaInicio), startSlot, false);
-  const endMs = slotDateMs_(String(data.fechaFin), endSlot, true);
+  const startMs = sameDay
+    ? slotDateMs_(String(data.fechaInicio), startSlot, false)
+    : dayBoundaryMs_(String(data.fechaInicio), false);
+  const endMs = sameDay
+    ? slotDateMs_(String(data.fechaFin), endSlot, true)
+    : dayBoundaryMs_(String(data.fechaFin), true);
   if (!startMs || !endMs || endMs <= startMs) {
     return jsonResponse_({result:'error',ok:false,message:'La finalización debe ser posterior al inicio.'});
   }
@@ -92,15 +98,17 @@ function submitReservation_(data) {
   set_(row, headerMap, 'Correo', String(data.correoSolicitante).trim());
   set_(row, headerMap, 'Categoría', String(data.categoriaReserva).trim());
   set_(row, headerMap, 'Material', String(data.materialReserva).trim());
-  set_(row, headerMap, 'Fecha de uso', String(data.fechaInicio).trim());
-  set_(row, headerMap, 'Duración', startSlot + ' → ' + String(data.fechaFin).trim() + ' ' + endSlot);
+  set_(row, headerMap, 'Fecha de uso', formatLongDateEs_(String(data.fechaInicio)));
+  set_(row, headerMap, 'Duración', sameDay
+    ? startSlot + ' → ' + endSlot
+    : formatLongDateEs_(String(data.fechaInicio)) + ' → ' + formatLongDateEs_(String(data.fechaFin)));
   set_(row, headerMap, 'Estado de la reserva', 'Pendiente de aceptación');
   set_(row, headerMap, 'ID solicitud', requestId);
   set_(row, headerMap, 'Finalidad didáctica', '');
   set_(row, headerMap, 'Token de gestión', managementToken);
-  set_(row, headerMap, 'Fecha inicio', String(data.fechaInicio).trim());
+  set_(row, headerMap, 'Fecha inicio', dateFromIso_(String(data.fechaInicio)));
   set_(row, headerMap, 'Tramo inicio', startSlot);
-  set_(row, headerMap, 'Fecha fin', String(data.fechaFin).trim());
+  set_(row, headerMap, 'Fecha fin', dateFromIso_(String(data.fechaFin)));
   set_(row, headerMap, 'Tramo fin', endSlot);
   set_(row, headerMap, 'Fin de reserva', endMs);
   sheet.appendRow(row);
@@ -327,6 +335,9 @@ function ensureHeaders_(sheet) {
   sheet.setFrozenRows(1);
   const map = {};
   current.forEach(function(h,i){if(h) map[String(h)] = i;});
+  applyDateColumnFormat_(sheet, map, 'Fecha inicio');
+  applyDateColumnFormat_(sheet, map, 'Fecha fin');
+  normalizeFechaUsoOnce_(sheet, map);
   return map;
 }
 
@@ -351,12 +362,16 @@ function rowToObject_(row, map) {
 }
 
 function publicRecord_(r, rowNumber) {
+  const startRaw = r['Fecha inicio'] || r['Fecha de uso'] || '';
+  const endRaw = r['Fecha fin'] || startRaw;
   return {
     rowNumber:rowNumber, requestId:String(r['ID solicitud'] || ''), createdAt:displayValue_(r['Fecha y hora']),
     requester:String(r['Nombre y apellidos'] || ''), group:String(r['Curso o grupo'] || ''),
     email:String(r['Correo'] || ''), category:String(r['Categoría'] || ''), material:String(r['Material'] || ''),
-    startDate:String(r['Fecha inicio'] || r['Fecha de uso'] || ''), startSlot:String(r['Tramo inicio'] || ''),
-    endDate:String(r['Fecha fin'] || ''), endSlot:String(r['Tramo fin'] || ''),
+    startDate:dateToIso_(startRaw), startDateLabel:formatLongDateEs_(startRaw),
+    startSlot:String(r['Tramo inicio'] || ''),
+    endDate:dateToIso_(endRaw), endDateLabel:formatLongDateEs_(endRaw),
+    endSlot:String(r['Tramo fin'] || ''),
     status:String(r['Estado de la reserva'] || ''), availableFrom:displayValue_(r['Disponible desde']),
     returnBy:displayValue_(r['Devolver antes de']), instructions:String(r['Indicaciones'] || ''),
     responseDate:displayValue_(r['Fecha de respuesta']), returnReported:displayValue_(r['Fecha devolución comunicada']),
@@ -394,6 +409,64 @@ function hashPassword_(value) {
   return bytes.map(function(b){const n=(b+256)%256;return ('0'+n.toString(16)).slice(-2);}).join('');
 }
 
+function dateFromIso_(value) {
+  const iso = dateToIso_(value);
+  if (!iso) return '';
+  const parts = iso.split('-').map(Number);
+  return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+}
+
+function dateToIso_(value) {
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    return Utilities.formatDate(value, TIME_ZONE, 'yyyy-MM-dd');
+  }
+  const text = String(value || '').trim();
+  const isoMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (isoMatch) return isoMatch[1] + '-' + isoMatch[2] + '-' + isoMatch[3];
+  const esMatch = text.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (esMatch) return esMatch[3] + '-' + ('0' + esMatch[2]).slice(-2) + '-' + ('0' + esMatch[1]).slice(-2);
+  const parsed = new Date(text);
+  return isNaN(parsed.getTime()) ? '' : Utilities.formatDate(parsed, TIME_ZONE, 'yyyy-MM-dd');
+}
+
+function formatLongDateEs_(value) {
+  const iso = dateToIso_(value);
+  if (!iso) return String(value || '');
+  const parts = iso.split('-').map(Number);
+  const date = new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0, 0);
+  const days = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  const months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return days[date.getDay()] + ', ' + parts[2] + ' de ' + months[parts[1] - 1] + ' de ' + parts[0];
+}
+
+function applyDateColumnFormat_(sheet, map, header) {
+  if (map[header] === undefined || sheet.getMaxRows() < 2) return;
+  sheet.getRange(2, map[header] + 1, sheet.getMaxRows() - 1, 1)
+    .setNumberFormat('dddd, d "de" mmmm "de" yyyy');
+}
+
+function normalizeFechaUsoOnce_(sheet, map) {
+  const propertyKey = 'FECHA_USO_LARGA_V1';
+  const props = PropertiesService.getScriptProperties();
+  if (props.getProperty(propertyKey) === 'ok' || map['Fecha de uso'] === undefined) return;
+  const lastRow = sheet.getLastRow();
+  if (lastRow >= 2) {
+    const range = sheet.getRange(2, map['Fecha de uso'] + 1, lastRow - 1, 1);
+    const values = range.getValues().map(function(row) {
+      return [row[0] ? formatLongDateEs_(row[0]) : ''];
+    });
+    range.setNumberFormat('@');
+    range.setValues(values);
+  }
+  props.setProperty(propertyKey, 'ok');
+}
+
+function dayBoundaryMs_(dateText, useEnd) {
+  const parts = String(dateText).split('-').map(Number);
+  if (parts.length !== 3) return 0;
+  return new Date(parts[0], parts[1] - 1, parts[2], useEnd ? 23 : 0, useEnd ? 59 : 0, useEnd ? 59 : 0, 0).getTime();
+}
+
 function slotDateMs_(dateText, slot, useEnd) {
   const dateParts = String(dateText).split('-').map(Number);
   const times = String(slot).split('-');
@@ -408,8 +481,8 @@ function returnUrl_(r) {
 }
 
 function summaryHtml_(r) {
-  const start = String(r['Fecha inicio'] || r['Fecha de uso'] || '');
-  const end = String(r['Fecha fin'] || '');
+  const start = formatLongDateEs_(r['Fecha inicio'] || r['Fecha de uso'] || '');
+  const end = formatLongDateEs_(r['Fecha fin'] || r['Fecha inicio'] || r['Fecha de uso'] || '');
   const slotStart = String(r['Tramo inicio'] || '');
   const slotEnd = String(r['Tramo fin'] || '');
   return '<table style="border-collapse:collapse;width:100%;max-width:620px">' +

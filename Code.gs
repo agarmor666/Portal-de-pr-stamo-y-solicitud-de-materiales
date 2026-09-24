@@ -421,27 +421,14 @@ function ensureHeaders_(sheet) {
 }
 
 function sendEmail_(to, subject, htmlBody) {
-  const options = {
+  MailApp.sendEmail({
+    to: to,
+    subject: subject,
+    body: htmlToText_(htmlBody),
     htmlBody: htmlBody,
     name: 'CEIP Bartolomé Flores',
     replyTo: ADMIN_EMAIL
-  };
-
-  try {
-    const aliases = GmailApp.getAliases();
-    if (aliases.indexOf(ADMIN_EMAIL) !== -1) {
-      options.from = ADMIN_EMAIL;
-    }
-  } catch (error) {
-    // Si el alias no está disponible, se usa la cuenta propietaria del script.
-  }
-
-  GmailApp.sendEmail(
-    to,
-    subject,
-    htmlToText_(htmlBody),
-    options
-  );
+  });
 }
 
 function reservationSummaryHtml_(data, requestId) {

@@ -446,6 +446,8 @@ async function enviarReserva(event) {
     tramoInicio: document.getElementById("tramoInicio").value,
     fechaFin: document.getElementById("fechaFin").value,
     tramoFin: document.getElementById("tramoFin").value,
+    duracion: document.getElementById("tramoInicio").value + " → " + document.getElementById("fechaFin").value + " " + document.getElementById("tramoFin").value,
+    finalidad: "Reserva de material",
     timestamp: fechaHoraLocal,
     estado: "Pendiente de aceptación",
     estadoInterno: "Pendiente de aceptación"

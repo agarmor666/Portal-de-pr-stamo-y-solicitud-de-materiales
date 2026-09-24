@@ -147,7 +147,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
           <label for="fechaInicio">Fecha de inicio</label>
           <input id="fechaInicio" name="fechaInicio" type="date" required>
         </div>
-        <div>
+        <div id="tramoInicioWrap">
           <label for="tramoInicio">Tramo de inicio</label>
           <select id="tramoInicio" name="tramoInicio" required>
             <option value="">Seleccionar tramo…</option>
@@ -162,7 +162,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
           <label for="fechaFin">Fecha de finalización</label>
           <input id="fechaFin" name="fechaFin" type="date" required>
         </div>
-        <div>
+        <div id="tramoFinWrap">
           <label for="tramoFin">Tramo final</label>
           <select id="tramoFin" name="tramoFin" required>
             <option value="">Seleccionar tramo…</option>
@@ -173,6 +173,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
             <option value="13:00-14:00">13:00–14:00</option>
           </select>
         </div>
+        <p id="tramos-ayuda" class="muted full">Si la reserva comienza y termina el mismo día, selecciona los tramos horarios.</p>
         <div class="full">
           <button type="submit" class="btn btn-primary btn-submit">Enviar reserva</button>
         </div>
@@ -435,6 +436,12 @@ async function enviarReserva(event) {
     `${dosCifras(ahora.getDate())}/${dosCifras(ahora.getMonth() + 1)}/${ahora.getFullYear()} ` +
     `${dosCifras(ahora.getHours())}:${dosCifras(ahora.getMinutes())}`;
 
+  actualizarTramosPorFechas();
+
+  const fechaInicioValor = document.getElementById("fechaInicio").value;
+  const fechaFinValor = document.getElementById("fechaFin").value;
+  const mismoDia = fechaInicioValor === fechaFinValor;
+
   const payload = {
     action: "submitReservation",
     nombreSolicitante: nombreFinal,
@@ -442,11 +449,13 @@ async function enviarReserva(event) {
     cursoGrupo: document.getElementById("cursoGrupo").value.trim(),
     categoriaReserva: categoriaReservaEl.value,
     materialReserva: materialReservaEl.value,
-    fechaInicio: document.getElementById("fechaInicio").value,
-    tramoInicio: document.getElementById("tramoInicio").value,
-    fechaFin: document.getElementById("fechaFin").value,
-    tramoFin: document.getElementById("tramoFin").value,
-    duracion: document.getElementById("tramoInicio").value + " → " + document.getElementById("fechaFin").value + " " + document.getElementById("tramoFin").value,
+    fechaInicio: fechaInicioValor,
+    tramoInicio: mismoDia ? document.getElementById("tramoInicio").value : "",
+    fechaFin: fechaFinValor,
+    tramoFin: mismoDia ? document.getElementById("tramoFin").value : "",
+    duracion: mismoDia
+      ? document.getElementById("tramoInicio").value + " → " + document.getElementById("tramoFin").value
+      : "Varios días",
     finalidad: "Reserva de material",
     timestamp: fechaHoraLocal,
     estado: "Pendiente de aceptación",
@@ -556,6 +565,30 @@ function statusClass(status) {
   return "";
 }
 
+function actualizarTramosPorFechas() {
+  const fechaInicio = document.getElementById("fechaInicio").value;
+  const fechaFin = document.getElementById("fechaFin").value;
+  const esVariosDias = Boolean(fechaInicio && fechaFin && fechaInicio !== fechaFin);
+  const inicioWrap = document.getElementById("tramoInicioWrap");
+  const finWrap = document.getElementById("tramoFinWrap");
+  const tramoInicio = document.getElementById("tramoInicio");
+  const tramoFin = document.getElementById("tramoFin");
+  const ayuda = document.getElementById("tramos-ayuda");
+
+  inicioWrap.hidden = esVariosDias;
+  finWrap.hidden = esVariosDias;
+  tramoInicio.required = !esVariosDias;
+  tramoFin.required = !esVariosDias;
+
+  if (esVariosDias) {
+    tramoInicio.value = "";
+    tramoFin.value = "";
+    ayuda.textContent = "Reserva de varios días: no es necesario seleccionar tramos horarios.";
+  } else {
+    ayuda.textContent = "Si la reserva comienza y termina el mismo día, selecciona los tramos horarios.";
+  }
+}
+
 function renderAdmin() {
   const q = document.getElementById("admin-busqueda").value.trim().toLowerCase();
   const estado = document.getElementById("admin-estado").value;
@@ -591,8 +624,8 @@ function renderAdmin() {
       <div class="admin-meta">
         <div><b>Solicitante</b><br>${adminEsc(r.requester)}</div>
         <div><b>Grupo o uso</b><br>${adminEsc(r.group)}</div>
-        <div><b>Inicio</b><br>${adminEsc(r.startDate)} · ${adminEsc(r.startSlot)}</div>
-        <div><b>Final</b><br>${adminEsc(r.endDate)} · ${adminEsc(r.endSlot)}</div>
+        <div><b>Inicio</b><br>${adminEsc(r.startDateLabel || r.startDate)}${r.startSlot ? " · " + adminEsc(r.startSlot) : ""}</div>
+        <div><b>Final</b><br>${adminEsc(r.endDateLabel || r.endDate)}${r.endSlot ? " · " + adminEsc(r.endSlot) : ""}</div>
       </div>${edit}${actions}</article>`;
   }).join("");
 }
@@ -650,10 +683,13 @@ filtroEstadoEl.addEventListener("change", renderCatalogo);
 categoriaReservaEl.addEventListener("change", poblarMaterialesReserva);
 nombreSolicitanteEl.addEventListener("change", actualizarDatosSolicitante);
 formReservaEl.addEventListener("submit", enviarReserva);
+document.getElementById("fechaInicio").addEventListener("change", actualizarTramosPorFechas);
+document.getElementById("fechaFin").addEventListener("change", actualizarTramosPorFechas);
 
 poblarFiltros();
 actualizarDatosSolicitante();
 poblarMaterialesReserva();
+actualizarTramosPorFechas();
 renderCatalogo();
 cargarDisponibilidad();
 setInterval(cargarDisponibilidad, 60000);

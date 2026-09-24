@@ -7,8 +7,175 @@ const ADMIN_PASSWORD_SALT = 'reservas-ceip-bf-2026-v1:';
 const ADMIN_PASSWORD_HASH = 'a7a746dceab3365727d8dfe6d511dfc5f258480ea1c9eff84a0b2e08bbe9fe5a';
 const SESSION_SECONDS = 21600;
 
+const CART_GROUPS = {
+  "Carro nº 1 Portátiles alumnado": [
+    "Portátil 1 — CND1253QLH",
+    "Portátil 2 — CND1253QSP",
+    "Portátil 3 — CND1253Q7G",
+    "Portátil 4 — CND1253R6M",
+    "Portátil 5 — CND1253SHS",
+    "Portátil 6 — CND1253SKN",
+    "Portátil 7 — CND1253SMZ",
+    "Portátil 8 — CND1253STM",
+    "Portátil 9 — CND1253STX",
+    "Portátil 10 — CND1253SV1",
+    "Portátil 11 — CND1253SYR",
+    "Portátil 12 — CND1253S0Z",
+    "Portátil 13 — CND1253S7H",
+    "Portátil 14 — CND1253TQ4",
+    "Portátil 15 — CND1253T5X",
+    "Portátil 16 — CND1253T91",
+    "Portátil 17 — CND1253VF0",
+    "Portátil 18 — CND1253VF2",
+    "Portátil 19 — CND1332F65",
+    "Portátil 20 — CND1253VJ9",
+    "Portátil 21 — CND1253VY7",
+    "Portátil 22 — CND1253V53",
+    "Portátil 23 — CND1253WRX",
+    "Portátil 24 — CND1253WZF"
+  ],
+  "Carro nº 2 Portátiles alumnado": [
+    "Portátil 25 — CND1253WZT",
+    "Portátil 26 — CND1253XJY",
+    "Portátil 27 — CND1253XWQ",
+    "Portátil 28 — CND1253XY9",
+    "Portátil 29 — CND1253X2Z",
+    "Portátil 30 — CND1253X4T",
+    "Portátil 31 — CND1253YW6",
+    "Portátil 32 — CND1253Y0Y",
+    "Portátil 33 — CND1253ZFM",
+    "Portátil 34 — CND1253ZF7",
+    "Portátil 35 — CND1253ZHJ",
+    "Portátil 36 — CND1253ZJZ",
+    "Portátil 37 — CND1253ZSJ",
+    "Portátil 38 — CND1253ZSQ",
+    "Portátil 39 — CND1253ZVY",
+    "Portátil 40 — CND1253ZXD",
+    "Portátil 41 — CND1253ZZB",
+    "Portátil 42 — CND1254001",
+    "Portátil 43 — CND125401H",
+    "Portátil 44 — CND1254016",
+    "Portátil 45 — CND125402Y",
+    "Portátil 46 — CND125405N",
+    "Portátil 47 — CND1254067",
+    "Portátil 48 — CND125407W"
+  ],
+  "Carro nº 3 Microordenador portátil aula": [
+    "Carro nº 3 · Portátil 1",
+    "Carro nº 3 · Portátil 2",
+    "Carro nº 3 · Portátil 3",
+    "Carro nº 3 · Portátil 4",
+    "Carro nº 3 · Portátil 5",
+    "Carro nº 3 · Portátil 6",
+    "Carro nº 3 · Portátil 7",
+    "Carro nº 3 · Portátil 8",
+    "Carro nº 3 · Portátil 9",
+    "Carro nº 3 · Portátil 10",
+    "Carro nº 3 · Portátil 11",
+    "Carro nº 3 · Portátil 12",
+    "Carro nº 3 · Portátil 13",
+    "Carro nº 3 · Portátil 14",
+    "Carro nº 3 · Portátil 15",
+    "Carro nº 3 · Portátil 16",
+    "Carro nº 3 · Portátil 17",
+    "Carro nº 3 · Portátil 18",
+    "Carro nº 3 · Portátil 19",
+    "Carro nº 3 · Portátil 20",
+    "Carro nº 3 · Portátil 21",
+    "Carro nº 3 · Portátil 22",
+    "Carro nº 3 · Portátil 23",
+    "Carro nº 3 · Portátil 24"
+  ],
+  "Carro nº 4 Proyecto STEAM: Robótica aplicada al aula": [
+    "Carro nº 4 · Portátil 1 — NXVPREB0031032DC5D7600",
+    "Carro nº 4 · Portátil 2 — NXVPREB0031032F1837600",
+    "Carro nº 4 · Portátil 3",
+    "Carro nº 4 · Portátil 4",
+    "Carro nº 4 · Portátil 5",
+    "Carro nº 4 · Portátil 6",
+    "Carro nº 4 · Portátil 7",
+    "Carro nº 4 · Portátil 8",
+    "Carro nº 4 · Portátil 9",
+    "Carro nº 4 · Portátil 10",
+    "Carro nº 4 · Portátil 11",
+    "Carro nº 4 · Portátil 12",
+    "Carro nº 4 · Portátil 13",
+    "Carro nº 4 · Portátil 14",
+    "Carro nº 4 · Portátil 15",
+    "Carro nº 4 · Portátil 16"
+  ],
+  "Carro nº 5 Portátiles Endesa": [
+    "Carro nº 5 · Portátil 1",
+    "Carro nº 5 · Portátil 2",
+    "Carro nº 5 · Portátil 3",
+    "Carro nº 5 · Portátil 4",
+    "Carro nº 5 · Portátil 5",
+    "Carro nº 5 · Portátil 6",
+    "Carro nº 5 · Portátil 7",
+    "Carro nº 5 · Portátil 8",
+    "Carro nº 5 · Portátil 9",
+    "Carro nº 5 · Portátil 10",
+    "Carro nº 5 · Portátil 11",
+    "Carro nº 5 · Portátil 12"
+  ],
+  "Carro nº 6 Microordenador Chrome portátil aula": [
+    "Carro nº 6 · Chromebook 1",
+    "Carro nº 6 · Chromebook 2",
+    "Carro nº 6 · Chromebook 3",
+    "Carro nº 6 · Chromebook 4",
+    "Carro nº 6 · Chromebook 5",
+    "Carro nº 6 · Chromebook 6",
+    "Carro nº 6 · Chromebook 7",
+    "Carro nº 6 · Chromebook 8",
+    "Carro nº 6 · Chromebook 9",
+    "Carro nº 6 · Chromebook 10",
+    "Carro nº 6 · Chromebook 11",
+    "Carro nº 6 · Chromebook 12",
+    "Carro nº 6 · Chromebook 13",
+    "Carro nº 6 · Chromebook 14",
+    "Carro nº 6 · Chromebook 15",
+    "Carro nº 6 · Chromebook 16",
+    "Carro nº 6 · Chromebook 17",
+    "Carro nº 6 · Chromebook 18",
+    "Carro nº 6 · Chromebook 19",
+    "Carro nº 6 · Chromebook 20",
+    "Carro nº 6 · Chromebook 21",
+    "Carro nº 6 · Chromebook 22",
+    "Carro nº 6 · Chromebook 23",
+    "Carro nº 6 · Chromebook extra 24 — MP28CYQ3",
+    "Carro nº 6 · Chromebook extra 25 — MP28D2H4"
+  ],
+  "Carro nº 7 Microordenador Chrome portátil aula": [
+    "Carro nº 7 · Chromebook 1",
+    "Carro nº 7 · Chromebook 2",
+    "Carro nº 7 · Chromebook 3",
+    "Carro nº 7 · Chromebook 4",
+    "Carro nº 7 · Chromebook 5",
+    "Carro nº 7 · Chromebook 6",
+    "Carro nº 7 · Chromebook 7",
+    "Carro nº 7 · Chromebook 8",
+    "Carro nº 7 · Chromebook 9",
+    "Carro nº 7 · Chromebook 10",
+    "Carro nº 7 · Chromebook 11",
+    "Carro nº 7 · Chromebook 12",
+    "Carro nº 7 · Chromebook 13",
+    "Carro nº 7 · Chromebook 14",
+    "Carro nº 7 · Chromebook 15",
+    "Carro nº 7 · Chromebook 16",
+    "Carro nº 7 · Chromebook 17",
+    "Carro nº 7 · Chromebook 18",
+    "Carro nº 7 · Chromebook 19",
+    "Carro nº 7 · Chromebook 20",
+    "Carro nº 7 · Chromebook 21",
+    "Carro nº 7 · Chromebook 22",
+    "Carro nº 7 · Chromebook 23",
+    "Carro nº 7 · Chromebook 24",
+    "Carro nº 7 · Chromebook extra 25 — MP28CYN3"
+  ]
+};
+
 const HEADERS = [
-  'Fecha y hora','Nombre y apellidos','Curso o grupo','Correo','Categoría','Material',
+  'Fecha y hora','Nombre y apellidos','Curso o grupo','Correo','Categoría','Material','Carro asociado',
   'Fecha de uso','Duración','Estado de la reserva','ID solicitud','Disponible desde',
   'Devolver antes de','Indicaciones','Fecha de respuesta','Finalidad didáctica','Token de gestión',
   'Fecha inicio','Tramo inicio','Fecha fin','Tramo fin','Fin de reserva',
@@ -28,7 +195,12 @@ function doGet(e) {
     const p = e && e.parameter ? e.parameter : {};
     const action = String(p.action || '');
     if (action === 'availability') {
-      return jsonResponse_({result:'success',ok:true,unavailable:getUnavailableMaterials_()});
+      const availability = getAvailability_();
+      return jsonResponse_({
+        result:'success',ok:true,
+        unavailable:availability.unavailable,
+        reservedCarts:availability.reservedCarts
+      });
     }
     if (action === 'manage') {
       return redirectPage_(PORTAL_URL + '?direccion=1&reserva=' + encodeURIComponent(String(p.id || '')));
@@ -85,7 +257,9 @@ function submitReservation_(data) {
 
   const sheet = getSheet_();
   const headerMap = ensureHeaders_(sheet);
-  if (isMaterialUnavailable_(sheet, String(data.materialReserva), headerMap)) {
+  const material = String(data.materialReserva).trim();
+  const associatedCart = parentCart_(material) || String(data.carroReserva || '').trim();
+  if (isMaterialUnavailable_(sheet, material, associatedCart, headerMap)) {
     return jsonResponse_({result:'error',ok:false,message:'El material ya no está disponible.'});
   }
 
@@ -97,7 +271,8 @@ function submitReservation_(data) {
   set_(row, headerMap, 'Curso o grupo', String(data.cursoGrupo).trim());
   set_(row, headerMap, 'Correo', String(data.correoSolicitante).trim());
   set_(row, headerMap, 'Categoría', String(data.categoriaReserva).trim());
-  set_(row, headerMap, 'Material', String(data.materialReserva).trim());
+  set_(row, headerMap, 'Material', material);
+  set_(row, headerMap, 'Carro asociado', associatedCart);
   set_(row, headerMap, 'Fecha de uso', formatLongDateEs_(String(data.fechaInicio)));
   set_(row, headerMap, 'Duración', sameDay
     ? startSlot + ' → ' + endSlot
@@ -300,20 +475,43 @@ function sendReturnedEmail_(r) {
       '<p>Gracias por dejarlo disponible para el resto del profesorado.</p>'));
 }
 
-function getUnavailableMaterials_() {
+function getAvailability_() {
   const sheet = getSheet_();
   const headerMap = ensureHeaders_(sheet);
-  return getDataRows_(sheet).map(function(row){return rowToObject_(row, headerMap);})
-    .filter(function(r){return ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) >= 0;})
-    .map(function(r){return String(r['Material'] || '').trim();})
+  const active = getDataRows_(sheet).map(function(row){return rowToObject_(row, headerMap);})
+    .filter(function(r){return ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) >= 0;});
+  const unavailable = active.map(function(r){return String(r['Material'] || '').trim();})
     .filter(function(v,i,a){return v && a.indexOf(v) === i;});
+  const reservedCarts = active.map(function(r){
+    const material = String(r['Material'] || '').trim();
+    return CART_GROUPS[material] ? material : '';
+  }).filter(function(v,i,a){return v && a.indexOf(v) === i;});
+  return {unavailable:unavailable,reservedCarts:reservedCarts};
 }
 
-function isMaterialUnavailable_(sheet, material, headerMap) {
+function parentCart_(material) {
+  const names = Object.keys(CART_GROUPS);
+  for (let i = 0; i < names.length; i += 1) {
+    if (CART_GROUPS[names[i]].indexOf(material) >= 0) return names[i];
+  }
+  return '';
+}
+
+function isMaterialUnavailable_(sheet, material, associatedCart, headerMap) {
+  const requestedIsCart = Boolean(CART_GROUPS[material]);
   return getDataRows_(sheet).some(function(row){
     const r = rowToObject_(row, headerMap);
-    return String(r['Material']).trim() === material.trim() &&
-      ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) >= 0;
+    if (ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) < 0) return false;
+    const reservedMaterial = String(r['Material'] || '').trim();
+    const reservedCart = String(r['Carro asociado'] || '').trim() || parentCart_(reservedMaterial);
+
+    if (requestedIsCart) {
+      return reservedMaterial === material || reservedCart === material;
+    }
+    if (associatedCart) {
+      return reservedMaterial === material || reservedMaterial === associatedCart;
+    }
+    return reservedMaterial === material;
   });
 }
 

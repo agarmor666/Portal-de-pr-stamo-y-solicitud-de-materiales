@@ -38,6 +38,22 @@ textarea{resize:vertical}
 [hidden]{display:none!important} input[readonly]{background:#f1f5f9;color:#334155} .btn:disabled,.mini-btn:disabled{opacity:.55;cursor:not-allowed}
 code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 @media (max-width:900px){.hero-grid,.reserva-grid,.tools-grid,.form-grid{grid-template-columns:1fr} .stats{grid-template-columns:1fr} h1{font-size:1.7rem}}
+
+.reserva-grid{grid-template-columns:1fr}
+.private-panel{margin-top:24px}
+.login-row,.admin-head,.admin-filters,.admin-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.login-row input{max-width:380px}.admin-head{justify-content:space-between}.admin-head h2{margin-bottom:4px}
+.admin-filters{margin:16px 0}.admin-filters input{flex:2;min-width:220px}.admin-filters select{flex:1;min-width:210px}
+.admin-list{display:grid;gap:14px}.admin-card{border:1px solid var(--border);border-radius:18px;padding:16px;background:#f8fafc}
+.admin-card.focus{outline:3px solid #f59e0b}.admin-title{display:flex;justify-content:space-between;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.admin-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin:12px 0;color:#334155}
+.status-pill{display:inline-block;border-radius:999px;padding:6px 10px;font-weight:800;background:#e2e8f0}
+.status-pill.pending{background:#fef3c7;color:#92400e}.status-pill.accepted{background:#dbeafe;color:#1d4ed8}
+.status-pill.reported{background:#ede9fe;color:#6d28d9}.status-pill.returned{background:#dcfce7;color:#166534}.status-pill.rejected{background:#ffe4e6;color:#be123c}
+.admin-edit{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}.admin-edit .full{grid-column:1/-1}
+.btn-danger{background:#be123c;color:#fff;border-color:#be123c}.btn-ok{background:#047857;color:#fff;border-color:#047857}
+.form-msg{white-space:pre-line}
+@media(max-width:700px){.admin-edit{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -52,6 +68,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
       <a href="https://agarmor666.github.io/Horarios-26-27/" class="btn btn-secondary">🏠 Inicio</a>
       <a href="#catalogo" class="btn btn-primary">Ver catálogo</a>
       <a href="#reserva" class="btn btn-secondary">Reservar material</a>
+      <button type="button" id="btn-direccion" class="btn btn-secondary">🔐 Dirección</button>
     </nav>
   </div>
 </header>
@@ -99,7 +116,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
   <section id="reserva" class="reserva-grid">
     <article class="card">
       <h2>Formulario de reserva</h2>
-      <p class="muted">Selecciona las opciones de la reserva. Los datos se registran automáticamente en la hoja de cálculo del centro.</p>
+      <p class="muted">Selecciona el material, las fechas y los tramos horarios. Dirección confirmará la solicitud por correo.</p>
       <form id="form-reserva" class="form-grid">
         <div>
           <label for="nombreSolicitante">Profesorado que reserva</label>
@@ -127,42 +144,81 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
           <select id="materialReserva" name="materialReserva" required></select>
         </div>
         <div>
-          <label for="fechaInicio">Fecha de uso o préstamo</label>
+          <label for="fechaInicio">Fecha de inicio</label>
           <input id="fechaInicio" name="fechaInicio" type="date" required>
         </div>
         <div>
-          <label for="duracion">Duración prevista</label>
-          <select id="duracion" name="duracion" required>
-            <option value="">Seleccionar duración…</option>
-            <option>Un tramo horario</option>
-            <option>Dos tramos horarios</option>
-            <option>Una mañana</option>
-            <option>Un día</option>
-            <option>Varios días</option>
-            <option>Una semana</option>
+          <label for="tramoInicio">Tramo de inicio</label>
+          <select id="tramoInicio" name="tramoInicio" required>
+            <option value="">Seleccionar tramo…</option>
+            <option value="09:00-10:00">09:00–10:00</option>
+            <option value="10:00-11:00">10:00–11:00</option>
+            <option value="11:00-11:30">11:00–11:30</option>
+            <option value="12:00-13:00">12:00–13:00</option>
+            <option value="13:00-14:00">13:00–14:00</option>
           </select>
         </div>
-        <div class="full">
-          <label for="finalidad">Finalidad didáctica</label>
-          <textarea id="finalidad" name="finalidad" rows="5" required></textarea>
+        <div>
+          <label for="fechaFin">Fecha de finalización</label>
+          <input id="fechaFin" name="fechaFin" type="date" required>
+        </div>
+        <div>
+          <label for="tramoFin">Tramo final</label>
+          <select id="tramoFin" name="tramoFin" required>
+            <option value="">Seleccionar tramo…</option>
+            <option value="09:00-10:00">09:00–10:00</option>
+            <option value="10:00-11:00">10:00–11:00</option>
+            <option value="11:00-11:30">11:00–11:30</option>
+            <option value="12:00-13:00">12:00–13:00</option>
+            <option value="13:00-14:00">13:00–14:00</option>
+          </select>
         </div>
         <div class="full">
           <button type="submit" class="btn btn-primary btn-submit">Enviar reserva</button>
         </div>
         <p id="form-msg" class="form-msg" aria-live="polite"></p>
       </form>
-    </article>
+    </article></section>
 
-    <article class="card">
-      <h2>Registro automático</h2>
-      <p class="muted">Cada solicitud se registra en:</p>
-      <p><strong>Portal de Reserva de Materiales y Recursos</strong><br>
-        Pestaña: <strong>Reservas</strong>
-      </p>
-      <p><a class="btn btn-secondary" href="https://docs.google.com/spreadsheets/d/1WoEWYlYjmSxs4RdmG4d5_r3wMULxTWSt6IuaOwa70I8/edit#gid=1477532422" target="_blank" rel="noopener noreferrer">Abrir hoja de reservas</a></p>
-      <p class="muted" style="margin-top:12px;">Al finalizar aparecerá un mensaje confirmando si la reserva se ha guardado correctamente.</p>
-    </article>
+  <section id="devolucion-panel" class="card private-panel" hidden>
+    <h2>Comunicar devolución</h2>
+    <p>Confirma que el material ya está colocado en su lugar. Dirección recibirá un aviso y, tras comprobarlo, cerrará la reserva.</p>
+    <p><strong>Reserva:</strong> <span id="devolucion-id"></span></p>
+    <button type="button" id="btn-confirmar-devolucion" class="btn btn-primary">He devuelto el material</button>
+    <p id="devolucion-msg" class="form-msg" aria-live="polite"></p>
   </section>
+
+  <section id="direccion-panel" class="card private-panel" hidden>
+    <div id="direccion-login">
+      <h2>🔐 Gestión de reservas · Dirección</h2>
+      <p class="muted">Acceso con la misma contraseña de Dirección utilizada en Asuntos propios.</p>
+      <div class="login-row">
+        <input id="direccion-password" type="password" autocomplete="current-password" placeholder="Contraseña">
+        <button type="button" id="btn-login-direccion" class="btn btn-primary">Acceder</button>
+      </div>
+      <p id="direccion-login-msg" class="form-msg" aria-live="polite"></p>
+    </div>
+    <div id="direccion-contenido" hidden>
+      <div class="admin-head">
+        <div><h2>Gestión de reservas</h2><p class="muted">Acepta solicitudes, comprueba devoluciones y consulta el historial.</p></div>
+        <button type="button" id="btn-actualizar-admin" class="btn btn-secondary">Actualizar</button>
+      </div>
+      <div class="admin-filters">
+        <input id="admin-busqueda" type="search" placeholder="Buscar código, docente o material…">
+        <select id="admin-estado">
+          <option value="">Todos los estados</option>
+          <option>Pendiente de aceptación</option>
+          <option>Aceptada</option>
+          <option>Devolución comunicada</option>
+          <option>Devuelta</option>
+          <option>Rechazada</option>
+        </select>
+      </div>
+      <p id="admin-msg" class="form-msg" aria-live="polite"></p>
+      <div id="admin-lista" class="admin-list"></div>
+    </div>
+  </section>
+
 </main>
 
 <script>
@@ -387,8 +443,9 @@ async function enviarReserva(event) {
     categoriaReserva: categoriaReservaEl.value,
     materialReserva: materialReservaEl.value,
     fechaInicio: document.getElementById("fechaInicio").value,
-    duracion: document.getElementById("duracion").value,
-    finalidad: document.getElementById("finalidad").value.trim(),
+    tramoInicio: document.getElementById("tramoInicio").value,
+    fechaFin: document.getElementById("fechaFin").value,
+    tramoFin: document.getElementById("tramoFin").value,
     timestamp: fechaHoraLocal,
     estado: "Pendiente de aceptación",
     estadoInterno: "Pendiente de aceptación"
@@ -416,7 +473,7 @@ async function enviarReserva(event) {
       formReservaEl.reset();
       actualizarDatosSolicitante();
       poblarMaterialesReserva();
-      formMsgEl.textContent = "Solicitud enviada. Queda pendiente de aceptación y recibirás un correo de confirmación.";
+      formMsgEl.textContent = `Solicitud enviada correctamente. Código de reserva: ${result.requestId}. Queda pendiente de aceptación y recibirás un correo de confirmación.`;
     } else {
       const detalle = result?.message ? ` ${result.message}` : "";
       formMsgEl.textContent = `No se pudo confirmar la reserva.${detalle}`;
@@ -426,6 +483,163 @@ async function enviarReserva(event) {
   } finally {
     submitButton.disabled = false;
   }
+}
+
+
+const direccionPanelEl = document.getElementById("direccion-panel");
+const devolucionPanelEl = document.getElementById("devolucion-panel");
+const adminListaEl = document.getElementById("admin-lista");
+const adminMsgEl = document.getElementById("admin-msg");
+let adminRecords = [];
+let adminSession = sessionStorage.getItem("reservasAdminSession") || "";
+
+async function apiPost(payload) {
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method:"POST", mode:"cors", headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload)
+  });
+  const result = await response.json();
+  if (!response.ok || result.ok !== true) throw new Error(result.message || "No se pudo completar la operación.");
+  return result;
+}
+
+function abrirDireccion() {
+  direccionPanelEl.hidden = false;
+  direccionPanelEl.scrollIntoView({behavior:"smooth",block:"start"});
+  if (adminSession) cargarAdmin();
+}
+
+async function loginDireccion() {
+  const msg = document.getElementById("direccion-login-msg");
+  const password = document.getElementById("direccion-password").value;
+  msg.textContent = "Comprobando acceso…";
+  try {
+    const result = await apiPost({action:"adminLogin",password});
+    adminSession = result.sessionToken;
+    sessionStorage.setItem("reservasAdminSession",adminSession);
+    document.getElementById("direccion-password").value = "";
+    msg.textContent = "";
+    await cargarAdmin();
+  } catch (error) { msg.textContent = error.message; }
+}
+
+async function cargarAdmin() {
+  adminMsgEl.textContent = "Cargando reservas…";
+  try {
+    const result = await apiPost({action:"adminList",sessionToken:adminSession});
+    adminRecords = result.records || [];
+    document.getElementById("direccion-login").hidden = true;
+    document.getElementById("direccion-contenido").hidden = false;
+    adminMsgEl.textContent = "";
+    renderAdmin();
+  } catch (error) {
+    adminSession = "";
+    sessionStorage.removeItem("reservasAdminSession");
+    document.getElementById("direccion-login").hidden = false;
+    document.getElementById("direccion-contenido").hidden = true;
+    document.getElementById("direccion-login-msg").textContent = error.message;
+  }
+}
+
+function adminEsc(value) {
+  return String(value ?? "").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+}
+
+function statusClass(status) {
+  if (status === "Pendiente de aceptación" || status === "Registrada") return "pending";
+  if (status === "Aceptada") return "accepted";
+  if (status === "Devolución comunicada") return "reported";
+  if (status === "Devuelta") return "returned";
+  if (status === "Rechazada") return "rejected";
+  return "";
+}
+
+function renderAdmin() {
+  const q = document.getElementById("admin-busqueda").value.trim().toLowerCase();
+  const estado = document.getElementById("admin-estado").value;
+  const focusId = new URLSearchParams(location.search).get("reserva") || "";
+  const filtered = adminRecords.filter(r => {
+    const hay = [r.requestId,r.requester,r.material,r.group].join(" ").toLowerCase().includes(q);
+    return hay && (!estado || r.status === estado);
+  });
+  if (!filtered.length) {
+    adminListaEl.innerHTML = '<p class="muted">No hay reservas que coincidan con el filtro.</p>';
+    return;
+  }
+  adminListaEl.innerHTML = filtered.map(r => {
+    const pending = r.status === "Pendiente de aceptación" || r.status === "Registrada";
+    const canReturn = r.status === "Aceptada" || r.status === "Devolución comunicada";
+    const edit = pending ? `
+      <div class="admin-edit">
+        <div><label>Disponible desde</label><input class="available-from" type="date" value="${adminEsc(r.startDate)}"></div>
+        <div><label>Devolver antes de</label><input class="return-by" type="date" value="${adminEsc(r.endDate)}"></div>
+        <div class="full"><label>Indicaciones para el solicitante</label><textarea class="instructions" rows="2">${adminEsc(r.instructions)}</textarea></div>
+      </div>` : "";
+    const actions = pending ? `
+      <div class="admin-actions">
+        <button class="btn btn-ok" onclick="resolverAdmin(this,'accept','${adminEsc(r.requestId)}')">Aceptar</button>
+        <button class="btn btn-danger" onclick="resolverAdmin(this,'reject','${adminEsc(r.requestId)}')">Rechazar</button>
+      </div>` : canReturn ? `
+      <div class="admin-actions">
+        <button class="btn btn-ok" onclick="resolverAdmin(this,'returned','${adminEsc(r.requestId)}')">Confirmar devolución</button>
+      </div>` : "";
+    return `<article class="admin-card ${r.requestId===focusId?"focus":""}" data-id="${adminEsc(r.requestId)}">
+      <div class="admin-title"><div><strong>${adminEsc(r.material)}</strong><div class="muted">Reserva ${adminEsc(r.requestId)}</div></div>
+      <span class="status-pill ${statusClass(r.status)}">${adminEsc(r.status)}</span></div>
+      <div class="admin-meta">
+        <div><b>Solicitante</b><br>${adminEsc(r.requester)}</div>
+        <div><b>Grupo o uso</b><br>${adminEsc(r.group)}</div>
+        <div><b>Inicio</b><br>${adminEsc(r.startDate)} · ${adminEsc(r.startSlot)}</div>
+        <div><b>Final</b><br>${adminEsc(r.endDate)} · ${adminEsc(r.endSlot)}</div>
+      </div>${edit}${actions}</article>`;
+  }).join("");
+}
+
+async function resolverAdmin(button, decision, requestId) {
+  const card = button.closest(".admin-card");
+  const instructions = card.querySelector(".instructions")?.value || "";
+  const availableFrom = card.querySelector(".available-from")?.value || "";
+  const returnBy = card.querySelector(".return-by")?.value || "";
+  const labels = {accept:"aceptar",reject:"rechazar",returned:"confirmar la devolución de"};
+  if (!confirm(`¿Quieres ${labels[decision]} la reserva ${requestId}?`)) return;
+  button.disabled = true;
+  adminMsgEl.textContent = "Guardando cambio…";
+  try {
+    await apiPost({action:"adminDecision",sessionToken:adminSession,decision,requestId,availableFrom,returnBy,instructions});
+    adminMsgEl.textContent = "Cambio guardado y correo enviado.";
+    await cargarAdmin();
+    await cargarDisponibilidad();
+  } catch (error) { adminMsgEl.textContent = error.message; button.disabled = false; }
+}
+
+async function comunicarDevolucion() {
+  const params = new URLSearchParams(location.search);
+  const requestId = params.get("devolver") || "";
+  const token = params.get("token") || "";
+  const msg = document.getElementById("devolucion-msg");
+  if (!requestId || !token) return;
+  msg.textContent = "Enviando aviso…";
+  try {
+    const result = await apiPost({action:"requesterReturn",requestId,token});
+    msg.textContent = result.message;
+    document.getElementById("btn-confirmar-devolucion").disabled = true;
+  } catch (error) { msg.textContent = error.message; }
+}
+
+document.getElementById("btn-direccion").addEventListener("click",abrirDireccion);
+document.getElementById("btn-login-direccion").addEventListener("click",loginDireccion);
+document.getElementById("direccion-password").addEventListener("keydown",e=>{if(e.key==="Enter")loginDireccion();});
+document.getElementById("btn-actualizar-admin").addEventListener("click",cargarAdmin);
+document.getElementById("admin-busqueda").addEventListener("input",renderAdmin);
+document.getElementById("admin-estado").addEventListener("change",renderAdmin);
+document.getElementById("btn-confirmar-devolucion").addEventListener("click",comunicarDevolucion);
+
+const pageParams = new URLSearchParams(location.search);
+if (pageParams.get("direccion") === "1") abrirDireccion();
+if (pageParams.get("devolver")) {
+  devolucionPanelEl.hidden = false;
+  document.getElementById("devolucion-id").textContent = pageParams.get("devolver");
+  devolucionPanelEl.scrollIntoView({behavior:"smooth",block:"start"});
 }
 
 busquedaEl.addEventListener("input", renderCatalogo);

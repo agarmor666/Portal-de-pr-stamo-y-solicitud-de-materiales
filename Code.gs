@@ -275,9 +275,13 @@ function submitReservation_(data) {
     return jsonResponse_({result:'error',ok:false,message:'El material ya no está disponible.'});
   }
 
-  const requestId = Utilities.getUuid().split('-')[0].toUpperCase();
-  const managementToken = Utilities.getUuid();
-  const row = blankRow_();
+  const sequenceLock = LockService.getScriptLock();
+  sequenceLock.waitLock(30000);
+  let requestId, managementToken, row;
+  try {
+    requestId = nextLoanId_(sheet, headerMap, String(data.nombreSolicitante).trim());
+    managementToken = Utilities.getUuid();
+    row = blankRow_();
   set_(row, headerMap, 'Fecha y hora', String(data.timestamp || formatDateTime_(new Date())));
   set_(row, headerMap, 'Nombre y apellidos', String(data.nombreSolicitante).trim());
   set_(row, headerMap, 'Curso o grupo', String(data.cursoGrupo).trim());
@@ -300,6 +304,10 @@ function submitReservation_(data) {
   set_(row, headerMap, 'Tramo fin', endSlot);
   set_(row, headerMap, 'Fin de reserva', endMs);
   sheet.appendRow(row);
+  SpreadsheetApp.flush();
+  } finally {
+    sequenceLock.releaseLock();
+  }
 
   const record = rowToObject_(row, headerMap);
   sendPendingEmailToRequester_(record);
@@ -308,6 +316,31 @@ function submitReservation_(data) {
   return jsonResponse_({result:'success',ok:true,requestId:requestId,status:'Pendiente de aceptación'});
 }
 
+function personInitials_(fullName) {
+  const clean = function(t){return String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toUpperCase().replace(/[^A-Z ]/g,' ').split(/\s+/).filter(Boolean);};
+  const halves = String(fullName || '').split(',');
+  const words = halves.length>1 ? clean(halves.slice(1).join(' ')).concat(clean(halves[0])) : clean(fullName);
+  return words.map(function(w){return w.charAt(0);}).join('').slice(0,6) || 'DOC';
+}
+function nextLoanId_(sheet,map,requester) {
+  const year=Utilities.formatDate(new Date(),TIME_ZONE,'yyyy');
+  const col=map['ID solicitud']+1;
+  const last=sheet.getLastRow();
+  const old=last>1?sheet.getRange(2,col,last-1,1).getValues().flat():[];
+  let max=0;
+  old.forEach(function(value){
+    const match=String(value||'').match(new RegExp('^PRE-'+year+'-(\\d{4,})-'));
+    if(match)max=Math.max(max,Number(match[1]));
+  });
+  const sequence=String(max+1).padStart(4,'0');
+  return 'PRE-'+year+'-'+sequence+'-'+personInitials_(requester);
+}
+function esDate_(value) {
+  const iso=dateToIso_(value);
+  if(!iso) return String(value || '');
+  const parts=iso.split('-');
+  return parts[2]+'/'+parts[1]+'/'+parts[0];
+}
 function adminLogin_(data) {
   const cache = CacheService.getScriptCache();
   const triesKey = 'login-tries';
@@ -350,13 +383,13 @@ function adminDecision_(data) {
   if (decision === 'accept') {
     if (status !== 'Pendiente de aceptación' && status !== 'Registrada') throw new Error('La solicitud ya ha sido resuelta.');
     writeCell_(located, 'Estado de la reserva', 'Aceptada');
-    writeCell_(located, 'Disponible desde', String(data.availableFrom || obj['Fecha inicio'] || obj['Fecha de uso'] || ''));
-    writeCell_(located, 'Devolver antes de', String(data.returnBy || obj['Fecha fin'] || ''));
+    writeCell_(located, 'Disponible desde', esDate_(data.availableFrom || obj['Fecha inicio'] || obj['Fecha de uso'] || ''));
+    writeCell_(located, 'Devolver antes de', esDate_(data.returnBy || obj['Fecha fin'] || ''));
     writeCell_(located, 'Indicaciones', String(data.instructions || ''));
     writeCell_(located, 'Fecha de respuesta', formatDateTime_(new Date()));
     obj['Estado de la reserva'] = 'Aceptada';
-    obj['Disponible desde'] = String(data.availableFrom || obj['Fecha inicio'] || obj['Fecha de uso'] || '');
-    obj['Devolver antes de'] = String(data.returnBy || obj['Fecha fin'] || '');
+    obj['Disponible desde'] = esDate_(data.availableFrom || obj['Fecha inicio'] || obj['Fecha de uso'] || '');
+    obj['Devolver antes de'] = esDate_(data.returnBy || obj['Fecha fin'] || '');
     obj['Indicaciones'] = String(data.instructions || '');
     sendAcceptedEmail_(obj);
   }
@@ -570,6 +603,8 @@ function ensureHeaders_(sheet) {
   current.forEach(function(h,i){if(h) map[String(h)] = i;});
   applyDateColumnFormat_(sheet, map, 'Fecha inicio');
   applyDateColumnFormat_(sheet, map, 'Fecha fin');
+  applyShortDateColumnFormat_(sheet, map, 'Disponible desde');
+  applyShortDateColumnFormat_(sheet, map, 'Devolver antes de');
   normalizeFechaUsoOnce_(sheet, map);
   return map;
 }
@@ -606,8 +641,8 @@ function publicRecord_(r, rowNumber) {
     startSlot:String(r['Tramo inicio'] || ''),
     endDate:dateToIso_(endRaw), endDateLabel:formatLongDateEs_(endRaw),
     endSlot:String(r['Tramo fin'] || ''),
-    status:String(r['Estado de la reserva'] || ''), availableFrom:displayValue_(r['Disponible desde']),
-    returnBy:displayValue_(r['Devolver antes de']), instructions:String(r['Indicaciones'] || ''),
+    status:String(r['Estado de la reserva'] || ''), availableFrom:esDate_(r['Disponible desde']),
+    returnBy:esDate_(r['Devolver antes de']), instructions:String(r['Indicaciones'] || ''),
     responseDate:displayValue_(r['Fecha de respuesta']), returnReported:displayValue_(r['Fecha devolución comunicada']),
     returnConfirmed:displayValue_(r['Fecha devolución confirmada'])
   };
@@ -673,6 +708,10 @@ function formatLongDateEs_(value) {
   return days[date.getDay()] + ', ' + parts[2] + ' de ' + months[parts[1] - 1] + ' de ' + parts[0];
 }
 
+function applyShortDateColumnFormat_(sheet, map, header) {
+  if(map[header] === undefined || sheet.getMaxRows()<2) return;
+  sheet.getRange(2,map[header]+1,sheet.getMaxRows()-1,1).setNumberFormat('dd/mm/yyyy');
+}
 function applyDateColumnFormat_(sheet, map, header) {
   if (map[header] === undefined || sheet.getMaxRows() < 2) return;
   sheet.getRange(2, map[header] + 1, sheet.getMaxRows() - 1, 1)

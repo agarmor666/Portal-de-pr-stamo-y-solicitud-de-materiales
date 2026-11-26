@@ -217,6 +217,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
         <input id="admin-busqueda" type="search" placeholder="Buscar código, docente o material…">
         <select id="admin-estado">
           <option value="">Todos los estados</option>
+          <option value="__pendientes__" selected>Pendientes (incluye registradas)</option>
           <option>Pendiente de aceptación</option>
           <option>Aceptada</option>
           <option>Devolución comunicada</option>
@@ -225,6 +226,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
         </select>
       </div>
       <p id="admin-msg" class="form-msg" aria-live="polite"></p>
+      <p id="admin-enlace-info" class="muted" hidden></p>
       <div id="admin-lista" class="admin-list"></div>
     </div>
   </section>
@@ -672,7 +674,16 @@ async function cargarAdmin() {
     document.getElementById("direccion-login").hidden = true;
     document.getElementById("direccion-contenido").hidden = false;
     adminMsgEl.textContent = "";
+    const linkedId = new URLSearchParams(location.search).get("reserva");
+    if (linkedId) {
+      document.getElementById("admin-busqueda").value = linkedId;
+      document.getElementById("admin-estado").value = "";
+      const note = document.getElementById("admin-enlace-info");
+      note.hidden = false;
+      note.textContent = "Mostrando únicamente la solicitud del correo: " + linkedId + ". Borra el código de búsqueda para ver otras reservas.";
+    }
     renderAdmin();
+    if(linkedId){ document.querySelector(".admin-card.focus")?.scrollIntoView({behavior:"smooth",block:"center"}); }
   } catch (error) {
     adminSession = "";
     sessionStorage.removeItem("reservasAdminSession");
@@ -725,22 +736,26 @@ function renderAdmin() {
   const focusId = new URLSearchParams(location.search).get("reserva") || "";
   const filtered = adminRecords.filter(r => {
     const hay = [r.requestId,r.requester,r.material,r.group].join(" ").toLowerCase().includes(q);
-    return hay && (!estado || r.status === estado);
+    return hay && (estado === "__pendientes__" ? (r.status === "Registrada" || r.status === "Pendiente de aceptación") : (!estado || r.status === estado));
   });
   if (!filtered.length) {
     adminListaEl.innerHTML = '<p class="muted">No hay reservas que coincidan con el filtro.</p>';
     return;
   }
+  const prioridad = {"Pendiente de aceptación":0,"Registrada":0,"Devolución comunicada":1,"Aceptada":2,"Devuelta":3,"Rechazada":4};
+  filtered.sort((a,b)=>(prioridad[a.status]??9)-(prioridad[b.status]??9));
   adminListaEl.innerHTML = filtered.map(r => {
     const pending = r.status === "Pendiente de aceptación" || r.status === "Registrada";
+    const hasId = Boolean(r.requestId);
+    const canAct = hasId && pending;
     const canReturn = r.status === "Aceptada" || r.status === "Devolución comunicada";
-    const edit = pending ? `
+    const edit = canAct ? `
       <div class="admin-edit">
         <div><label>Disponible desde</label><input class="available-from" type="date" value="${adminEsc(r.startDate)}"></div>
         <div><label>Devolver antes de</label><input class="return-by" type="date" value="${adminEsc(r.endDate)}"></div>
         <div class="full"><label>Indicaciones para el solicitante</label><textarea class="instructions" rows="2">${adminEsc(r.instructions)}</textarea></div>
       </div>` : "";
-    const actions = pending ? `
+    const actions = canAct ? `
       <div class="admin-actions">
         <button class="btn btn-ok" onclick="resolverAdmin(this,'accept','${adminEsc(r.requestId)}')">Aceptar</button>
         <button class="btn btn-danger" onclick="resolverAdmin(this,'reject','${adminEsc(r.requestId)}')">Rechazar</button>
@@ -756,7 +771,7 @@ function renderAdmin() {
         <div><b>Grupo o uso</b><br>${adminEsc(r.group)}</div>
         <div><b>Inicio</b><br>${adminEsc(r.startDateLabel || r.startDate)}${r.startSlot ? " · " + adminEsc(r.startSlot) : ""}</div>
         <div><b>Final</b><br>${adminEsc(r.endDateLabel || r.endDate)}${r.endSlot ? " · " + adminEsc(r.endSlot) : ""}</div>
-      </div>${edit}${actions}</article>`;
+      </div>${!hasId ? '<p class="notice">Reserva antigua sin código: necesita regularización antes de poder gestionarla.</p>' : ""}${edit}${actions}</article>`;
   }).join("");
 }
 
@@ -771,8 +786,12 @@ async function resolverAdmin(button, decision, requestId) {
   adminMsgEl.textContent = "Guardando cambio…";
   try {
     await apiPost({action:"adminDecision",sessionToken:adminSession,decision,requestId,availableFrom,returnBy,instructions});
-    adminMsgEl.textContent = "Cambio guardado y correo enviado.";
+    adminMsgEl.textContent = "Cambio registrado. Actualizando estado…";
     await cargarAdmin();
+    const updated = adminRecords.find(r=>r.requestId===requestId);
+    const expected = {accept:"Aceptada",reject:"Rechazada",returned:"Devuelta"}[decision];
+    if(updated?.status !== expected){adminMsgEl.textContent = "AVISO: no se ha confirmado el cambio en la hoja. Actualiza y comprueba el registro.";return;}
+    adminMsgEl.textContent = "Reserva actualizada: "+ expected + ".";
     await cargarDisponibilidad();
   } catch (error) { adminMsgEl.textContent = error.message; button.disabled = false; }
 }

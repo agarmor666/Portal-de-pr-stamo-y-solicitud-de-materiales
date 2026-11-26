@@ -179,7 +179,7 @@ const HEADERS = [
   'Fecha de uso','Duración','Estado de la reserva','ID solicitud','Disponible desde',
   'Devolver antes de','Indicaciones','Fecha de respuesta','Finalidad didáctica','Token de gestión',
   'Fecha inicio','Tramo inicio','Fecha fin','Tramo fin','Fin de reserva',
-  'Recordatorio devolución','Fecha devolución comunicada','Fecha devolución confirmada'
+  'Recordatorio devolución','Fecha devolución comunicada','Fecha devolución confirmada','Equipos incluidos'
 ];
 
 const ACTIVE_STATUSES = [
@@ -258,8 +258,19 @@ function submitReservation_(data) {
   const sheet = getSheet_();
   const headerMap = ensureHeaders_(sheet);
   const material = String(data.materialReserva).trim();
-  const associatedCart = parentCart_(material) || String(data.carroReserva || '').trim();
-  if (isMaterialUnavailable_(sheet, material, associatedCart, headerMap)) {
+  const associatedCart = parentCart_(material) || (CART_GROUPS[material] ? material : String(data.carroReserva || '').trim());
+  const requestedBundle = CART_GROUPS[material] ? (Array.isArray(data.equiposCarro) ? data.equiposCarro : []) : [];
+  const staticLoans = legacyLoans_();
+  const occupied = occupiedItems_(getDataRows_(sheet).map(function(row){return rowToObject_(row,headerMap);}));
+  let included = [];
+  if(CART_GROUPS[material]){
+    included = CART_GROUPS[material].filter(function(item){return !staticLoans.has(item) && !occupied.has(item);});
+    if(!included.length || requestedBundle.length !== included.length ||
+       requestedBundle.some(function(item){return included.indexOf(item)<0;}) ||
+       occupied.has(material)){
+      return jsonResponse_({result:'error',ok:false,message:'La composición del carro ha cambiado. Actualiza el catálogo y vuelve a solicitarlo.'});
+    }
+  } else if(staticLoans.has(material) || occupied.has(material) || (associatedCart && occupied.has(associatedCart))){
     return jsonResponse_({result:'error',ok:false,message:'El material ya no está disponible.'});
   }
 
@@ -273,6 +284,7 @@ function submitReservation_(data) {
   set_(row, headerMap, 'Categoría', String(data.categoriaReserva).trim());
   set_(row, headerMap, 'Material', material);
   set_(row, headerMap, 'Carro asociado', associatedCart);
+  set_(row, headerMap, 'Equipos incluidos', included.length ? JSON.stringify(included) : '');
   set_(row, headerMap, 'Fecha de uso', formatLongDateEs_(String(data.fechaInicio)));
   set_(row, headerMap, 'Duración', sameDay
     ? startSlot + ' → ' + endSlot
@@ -475,18 +487,52 @@ function sendReturnedEmail_(r) {
       '<p>Gracias por dejarlo disponible para el resto del profesorado.</p>'));
 }
 
+function legacyLoans_() {
+  // Inventario previo, distinto de solicitudes registradas en la hoja.
+  return new Set([
+    'Carro nº 4 · Portátil 1 — NXVPREB0031032DC5D7600',
+    'Carro nº 4 · Portátil 2 — NXVPREB0031032F1837600',
+    'Carro nº 6 · Chromebook 6 — MP28D502',
+    'Carro nº 7 · Chromebook extra 25 — MP28CYN3'
+  ]);
+}
+function includedItems_(r) {
+  const material = String(r['Material'] || '').trim();
+  if(!CART_GROUPS[material]) return material ? [material] : [];
+  const raw = String(r['Equipos incluidos'] || '').trim();
+  if(!raw) return [material].concat(CART_GROUPS[material]);
+  try{
+    const bundle = JSON.parse(raw);
+    return Array.isArray(bundle) ? bundle : [material].concat(CART_GROUPS[material]);
+  }catch(e){return [material].concat(CART_GROUPS[material]);}
+}
+function occupiedItems_(rows) {
+  const busy = new Set();
+  rows.filter(function(r){return ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) >= 0;})
+    .forEach(function(r){
+      const material = String(r['Material'] || '').trim();
+      const hasBundle = CART_GROUPS[material] && String(r['Equipos incluidos']||'').trim();
+      includedItems_(r).forEach(function(name){busy.add(name);});
+      if(hasBundle)busy.add(material); // evita dos reservas simultáneas del mismo carro
+    });
+  return busy;
+}
 function getAvailability_() {
   const sheet = getSheet_();
   const headerMap = ensureHeaders_(sheet);
   const active = getDataRows_(sheet).map(function(row){return rowToObject_(row, headerMap);})
     .filter(function(r){return ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) >= 0;});
-  const unavailable = active.map(function(r){return String(r['Material'] || '').trim();})
-    .filter(function(v,i,a){return v && a.indexOf(v) === i;});
-  const reservedCarts = active.map(function(r){
+  const unavailable = occupiedItems_(active);
+  const reservedCarts = active.filter(function(r){
     const material = String(r['Material'] || '').trim();
-    return CART_GROUPS[material] ? material : '';
-  }).filter(function(v,i,a){return v && a.indexOf(v) === i;});
-  return {unavailable:unavailable,reservedCarts:reservedCarts};
+    return Boolean(CART_GROUPS[material]) && !String(r['Equipos incluidos'] || '').trim();
+  }).map(function(r){return String(r['Material']);});
+  // Para reservas de carro parcial solo bloqueamos los portátiles incluidos, no todo el carro.
+  active.forEach(function(r){
+    const material=String(r['Material']||'');
+    if(CART_GROUPS[material] && String(r['Equipos incluidos']||'').trim()) unavailable.delete(material);
+  });
+  return {unavailable:Array.from(unavailable),reservedCarts:reservedCarts};
 }
 
 function parentCart_(material) {
@@ -498,21 +544,9 @@ function parentCart_(material) {
 }
 
 function isMaterialUnavailable_(sheet, material, associatedCart, headerMap) {
-  const requestedIsCart = Boolean(CART_GROUPS[material]);
-  return getDataRows_(sheet).some(function(row){
-    const r = rowToObject_(row, headerMap);
-    if (ACTIVE_STATUSES.indexOf(String(r['Estado de la reserva'])) < 0) return false;
-    const reservedMaterial = String(r['Material'] || '').trim();
-    const reservedCart = String(r['Carro asociado'] || '').trim() || parentCart_(reservedMaterial);
-
-    if (requestedIsCart) {
-      return reservedMaterial === material || reservedCart === material;
-    }
-    if (associatedCart) {
-      return reservedMaterial === material || reservedMaterial === associatedCart;
-    }
-    return reservedMaterial === material;
-  });
+  const occupied = occupiedItems_(getDataRows_(sheet).map(function(row){return rowToObject_(row,headerMap);}));
+  return occupied.has(material) || legacyLoans_().has(material) ||
+    (associatedCart && occupied.has(associatedCart));
 }
 
 function getSheet_() {
@@ -566,6 +600,7 @@ function publicRecord_(r, rowNumber) {
     rowNumber:rowNumber, requestId:String(r['ID solicitud'] || ''), createdAt:displayValue_(r['Fecha y hora']),
     requester:String(r['Nombre y apellidos'] || ''), group:String(r['Curso o grupo'] || ''),
     email:String(r['Correo'] || ''), category:String(r['Categoría'] || ''), material:String(r['Material'] || ''),
+    includedItems: String(r['Equipos incluidos'] || ''),
     startDate:dateToIso_(startRaw), startDateLabel:formatLongDateEs_(startRaw),
     startSlot:String(r['Tramo inicio'] || ''),
     endDate:dateToIso_(endRaw), endDateLabel:formatLongDateEs_(endRaw),
@@ -686,6 +721,7 @@ function summaryHtml_(r) {
   return '<table style="border-collapse:collapse;width:100%;max-width:620px">' +
     summaryRow_('Código',r['ID solicitud']) + summaryRow_('Solicitante',r['Nombre y apellidos']) +
     summaryRow_('Curso, grupo o uso',r['Curso o grupo']) + summaryRow_('Material',r['Material']) +
+    (r['Equipos incluidos'] ? summaryRow_('Equipos incluidos', (function(){try{return JSON.parse(r['Equipos incluidos']).join(', ');}catch(e){return r['Equipos incluidos'];}})()) : '') +
     summaryRow_('Inicio',start + (slotStart ? ' · ' + slotStart : '')) +
     summaryRow_('Final',end + (slotEnd ? ' · ' + slotEnd : '')) + '</table>';
 }

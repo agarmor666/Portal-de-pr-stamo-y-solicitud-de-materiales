@@ -244,6 +244,7 @@ categorias.forEach(cat => cat.items.forEach(item => {
 }));
 
 const CART_CATEGORY = "Portátiles y carros del centro";
+let supportsPartialCart = false;
 
 function buscarItem(nombre) {
   for (const categoria of categorias) {
@@ -356,6 +357,7 @@ async function cargarDisponibilidad() {
   try {
     const response = await fetch(`${APPS_SCRIPT_URL}?action=availability&t=${Date.now()}`, { cache: "no-store" });
     const data = await response.json();
+    supportsPartialCart = data.supportsPartialCart === true;
     aplicarDisponibilidad(data);
     renderCatalogo();
     poblarMaterialesReserva();
@@ -390,9 +392,9 @@ function poblarMaterialesReserva() {
   const crearOpcion = (item, destino) => {
     const opt = document.createElement("option");
     opt.value = item.nombre;
-    opt.disabled = item.estado !== "Disponible";
+    opt.disabled = item.estado !== "Disponible" || (item.tipo === "carro" && item.parcial && !supportsPartialCart);
     const displayName = item.sustituidoPor ? `${item.nombre} (sustituido por ${item.sustituidoPor})` : item.nombre;
-    opt.textContent = item.tipo === "carro" && item.parcial ? `${displayName} — reservar carro con ${item.disponibles} equipos disponibles` : (item.estado === "Disponible" ? displayName : `${displayName} — no disponible`);
+    opt.textContent = item.tipo === "carro" && item.parcial ? `${displayName} — ${supportsPartialCart ? "reservar carro con " + item.disponibles + " equipos disponibles" : "pendiente de activar reserva parcial"}` : (item.estado === "Disponible" ? displayName : `${displayName} — no disponible`);
     destino.appendChild(opt);
   };
 
@@ -435,7 +437,7 @@ function crearTarjetaItem(item, categoria, claseExtra = "") {
   const article = document.createElement("article");
   article.className = `item ${claseExtra}`.trim();
   const estadoClass = item.estado.toLowerCase();
-  const sePuedeReservar = item.estado === "Disponible";
+  const sePuedeReservar = item.estado === "Disponible" && !(item.tipo === "carro" && item.parcial && !supportsPartialCart);
   const seleccionarUnidades = item.tipo === "carro" && item.parcial;
   const notaCatalogacion = item.tipo === "portatil" && item.catalogado === false
     ? '<span class="catalogacion">Sin número de serie registrado</span>'
@@ -454,10 +456,10 @@ function crearTarjetaItem(item, categoria, claseExtra = "") {
       <p><strong>Contenido:</strong> ${textoDisponibles}</p>
       <p><strong>Ubicación:</strong> ${item.ubicacion}</p>
       ${item.responsableInventario && item.estado === "Prestado" ? `<p><strong>Responsable del préstamo previo:</strong> ${item.responsableInventario}</p>` : ""}
-      ${seleccionarUnidades ? `<p>Se puede reservar el carro con ${item.disponibles} equipos libres, excluyendo los prestados.</p>` : ""}
+      ${seleccionarUnidades ? `<p>${supportsPartialCart ? "Se puede reservar el carro con " + item.disponibles + " equipos libres, excluyendo los prestados." : "Reserva parcial pendiente de actualizar el servicio de registro. Por ahora se pueden reservar equipos libres por separado."}</p>` : ""}
       ${notaCatalogacion}
     </div>
-    <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(categoria.nombre)}" data-elegir-unidades="${seleccionarUnidades ? "1" : "0"}" ${sePuedeReservar ? "" : "disabled"}>${sePuedeReservar ? (seleccionarUnidades ? `Reservar carro con ${item.disponibles} equipos` : (item.tipo === "carro" ? "Reservar el carro completo" : "Reservar este material")) : "No disponible"}</button>
+    <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(categoria.nombre)}" data-elegir-unidades="${seleccionarUnidades ? "1" : "0"}" ${sePuedeReservar ? "" : "disabled"}>${sePuedeReservar ? (seleccionarUnidades ? (supportsPartialCart ? `Reservar carro con ${item.disponibles} equipos` : "Reserva parcial pendiente") : (item.tipo === "carro" ? "Reservar el carro completo" : "Reservar este material")) : "No disponible"}</button>
   `;
   return article;
 }

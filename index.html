@@ -710,7 +710,7 @@ async function enviarReserva(event) {
       formReservaEl.reset();
       actualizarDatosSolicitante();
       poblarMaterialesReserva();
-      formMsgEl.textContent = `Solicitud enviada correctamente. Código de reserva: ${result.requestId}. Queda pendiente de aceptación y recibirás un correo de confirmación.`;
+      formMsgEl.textContent = `Solicitud enviada correctamente. N.º de préstamo: ${result.requestId}. Queda pendiente de aceptación y recibirás un correo de confirmación.`;
     } else {
       const detalle = result?.message ? ` ${result.message}` : "";
       formMsgEl.textContent = `No se pudo confirmar la reserva.${detalle}`;
@@ -872,7 +872,7 @@ function renderAdmin() {
         <button class="btn btn-ok" onclick="resolverAdmin(this,'returned','${adminEsc(r.requestId)}')">Confirmar devolución</button>
       </div>` : "";
     return `<article class="admin-card ${r.requestId===focusId?"focus":""}" data-id="${adminEsc(r.requestId)}">
-      <div class="admin-title"><div><strong>${adminEsc(r.material)}</strong><div class="muted">Reserva ${adminEsc(r.requestId)}</div></div>
+      <div class="admin-title"><div><strong>${adminEsc(r.material)}</strong><div class="muted">Préstamo ${adminEsc(r.requestId)}</div></div>
       <span class="status-pill ${statusClass(r.status)}">${adminEsc(r.status)}</span></div>
       <div class="admin-meta">
         <div><b>Solicitante</b><br>${adminEsc(r.requester)}</div>

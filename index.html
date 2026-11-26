@@ -46,6 +46,34 @@ textarea{resize:vertical}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px} .form-grid .full{grid-column:1 / -1} .form-msg{margin:0;min-height:24px;color:var(--muted)}
 [hidden]{display:none!important} input[readonly]{background:#f1f5f9;color:#334155} .btn:disabled,.mini-btn:disabled{opacity:.55;cursor:not-allowed}
 code{background:#eef2ff;padding:2px 6px;border-radius:8px}
+.catalogo{gap:12px!important;margin-top:16px!important}
+.catalogo details{min-width:0}
+.catalogo summary{cursor:pointer;list-style:none}
+.catalogo summary::-webkit-details-marker{display:none}
+.categoria-desplegable{overflow:hidden;border:1px solid #dbe3ec;border-radius:18px;background:#fff;box-shadow:0 2px 7px #0f172a0a}
+.categoria-desplegable>summary{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:19px 22px;background:#f7fafc}
+.categoria-desplegable[open]>summary{border-bottom:1px solid #e2e8f0}
+.cat-heading{display:flex;align-items:center;gap:14px;min-width:0}
+.cat-symbol{font-size:1.55rem;line-height:1}
+.cat-heading strong{display:block;font-size:1.1rem;color:#0f172a}
+.cat-heading small{display:block;color:#64748b;margin-top:4px;font-size:.88rem}
+.cat-status{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.cat-count{font-size:.82rem;font-weight:700;background:#e0f2fe;color:#075985;border-radius:24px;padding:7px 11px}
+.cat-chevron{font-size:1.35rem;transition:transform .2s;color:#475569}
+.categoria-desplegable[open] .cat-chevron{transform:rotate(180deg)}
+.categoria-details{padding:18px}
+.carro-bloque{margin-bottom:10px}
+.carro-desplegable{border:1px solid #b7e3cb;background:#f2fbf6;border-radius:16px;overflow:hidden;margin-bottom:11px}
+.carro-desplegable summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.carro-desplegable[open] summary{border-bottom:1px solid #b7e3cb}
+.carro-mini-titulo{display:block;font-weight:750;color:#16442c}
+.carro-mini-desc{display:block;font-size:.84rem;color:#475569;margin-top:3px}
+.carro-content{padding:14px}
+.carro-content .carro-principal{margin-bottom:12px}
+.carro-content .carro-principal .item{border:1px solid #cbd5e1}
+.carro-content .portatiles-grid{grid-template-columns:repeat(auto-fit,minmax(225px,1fr))}
+.cat-empty{padding:18px;color:#64748b}
+@media (max-width:700px){.cat-count{font-size:.74rem}.categoria-desplegable>summary{padding:16px}.cat-heading strong{font-size:1rem}.carro-desplegable summary{padding:12px}}
 @media (max-width:900px){.hero-grid,.reserva-grid,.tools-grid,.form-grid{grid-template-columns:1fr} .stats{grid-template-columns:1fr} h1{font-size:1.7rem}.carro-bloque{padding:12px}.portatiles-grid,.otros-grid{grid-template-columns:1fr}}
 
 .reserva-grid{grid-template-columns:1fr}
@@ -71,7 +99,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
     <div>
       <p class="eyebrow">CEIP Bartolomé Flores · Portal interno</p>
       <h1>Catálogo y reservas de materiales</h1>
-      <p class="lede">Consulta el inventario del centro, filtra por categoría y envía solicitudes de préstamo desde el formulario.</p>
+      <p class="lede">Explora los materiales por categorías desplegables, consulta su disponibilidad y solicita una reserva en pocos pasos.</p>
     </div>
     <nav class="header-nav">
       <a href="https://agarmor666.github.io/Horarios-26-27/" class="btn btn-secondary">🏠 Inicio</a>
@@ -85,7 +113,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 <main class="wrap">
   <section class="hero-grid">
 
-    <aside class="card help-card">
+    <aside class="card help-card" id="normas" hidden>
       <h2>Normas básicas</h2>
       <ul>
         <li>La solicitud debe hacerse con antelación suficiente.</li>
@@ -97,6 +125,8 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
   </section>
 
   <section class="card tools-card">
+    <h2 class="catalogo-heading">Explorar materiales del centro</h2>
+    <p class="muted" style="margin:0 0 16px">Abre una categoría para ver sus materiales. Los carros tienen un segundo desplegable con sus portátiles.</p>
     <div class="tools-grid">
       <div>
         <label for="busqueda">Buscar material</label>
@@ -120,9 +150,10 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
     </div>
   </section>
 
-  <section id="catalogo" class="catalogo"></section>
+  <section id="catalogo" class="catalogo" aria-label="Categorías de material desplegables"></section>
 
   <section id="reserva" class="reserva-grid">
+    
     <article class="card">
       <h2>Formulario de reserva</h2>
       <p class="muted">Selecciona el material, las fechas y los tramos horarios. Dirección confirmará la solicitud por correo.</p>
@@ -467,93 +498,138 @@ function crearTarjetaItem(item, categoria, claseExtra = "") {
 function renderCategoriaCarros(cat, body, texto, estado) {
   body.classList.add("carros-body");
   const carros = cat.items.filter(item => item.tipo === "carro");
+  const buscando = Boolean(texto.trim() || estado !== "Todos");
   carros.forEach(carro => {
     const portatiles = cat.items.filter(item => item.tipo === "portatil" && item.carro === carro.nombre);
     const carroCoincide = itemCoincide(carro, texto, estado);
     const portatilesFiltrados = portatiles.filter(item => itemCoincide(item, texto, estado));
     if (!carroCoincide && !portatilesFiltrados.length) return;
-
-    const bloque = document.createElement("section");
-    bloque.className = "carro-bloque";
+    const detalle = document.createElement("details");
+    detalle.className = "carro-desplegable";
+    detalle.dataset.carro = carro.nombre;
+    detalle.open = carrosAbiertos.has(carro.nombre) || buscando;
+    const prestados = portatiles.length - carro.disponibles;
+    const summary = document.createElement("summary");
+    const titulo = document.createElement("div");
+    titulo.innerHTML = `<span class="carro-mini-titulo">${carro.nombre}</span><span class="carro-mini-desc">${carro.disponibles} libres de ${portatiles.length} equipos${prestados ? " · "+prestados+" no disponibles" : ""}</span>`;
+    const indicador = document.createElement("span");
+    indicador.className = "cat-chevron";
+    indicador.textContent = "⌄";
+    summary.append(titulo, indicador);
+    detalle.appendChild(summary);
+    detalle.addEventListener("toggle", () => {
+      if(detalle.open) carrosAbiertos.add(carro.nombre);
+      else carrosAbiertos.delete(carro.nombre);
+    });
+    const contenido = document.createElement("div");
+    contenido.className = "carro-content";
     const principal = document.createElement("div");
     principal.className = "carro-principal";
     principal.appendChild(crearTarjetaItem(carro, cat, "carro-item"));
-    bloque.appendChild(principal);
-
-    const titulo = document.createElement("div");
-    titulo.className = "carro-titulo";
-    titulo.innerHTML = `<h4>Portátiles de este carro</h4><span>${portatiles.length} equipos</span>`;
-    bloque.appendChild(titulo);
-
+    contenido.appendChild(principal);
     const rejilla = document.createElement("div");
     rejilla.className = "portatiles-grid";
-    const hijosVisibles = texto.trim() || estado !== "Todos" ? portatilesFiltrados : portatiles;
-    hijosVisibles.forEach(item => rejilla.appendChild(crearTarjetaItem(item, cat, "portatil-item")));
-    bloque.appendChild(rejilla);
-    body.appendChild(bloque);
+    const visibles = buscando && !carroCoincide ? portatilesFiltrados : portatiles;
+    visibles.forEach(item => rejilla.appendChild(crearTarjetaItem(item, cat, "portatil-item")));
+    contenido.appendChild(rejilla);
+    detalle.appendChild(contenido);
+    body.appendChild(detalle);
   });
-
   const otros = cat.items.filter(item => !item.tipo && itemCoincide(item, texto, estado));
   if (otros.length) {
-    const bloqueOtros = document.createElement("section");
-    bloqueOtros.className = "otros-bloque";
-    bloqueOtros.innerHTML = "<h4>Otros equipos tecnológicos</h4>";
+    const bloqueOtros = document.createElement("details");
+    bloqueOtros.className = "carro-desplegable";
+    bloqueOtros.open = otrosAbiertos || Boolean(texto.trim() || estado !== "Todos");
+    bloqueOtros.addEventListener("toggle",()=>{otrosAbiertos=bloqueOtros.open;});
+    bloqueOtros.innerHTML = `<summary><span class="carro-mini-titulo">Otros equipos tecnológicos · ${otros.length}</span><span class="cat-chevron">⌄</span></summary>`;
     const rejilla = document.createElement("div");
-    rejilla.className = "otros-grid";
+    rejilla.className = "otros-grid carro-content";
     otros.forEach(item => rejilla.appendChild(crearTarjetaItem(item, cat)));
     bloqueOtros.appendChild(rejilla);
     body.appendChild(bloqueOtros);
   }
 }
 
+const categoriasAbiertas = new Set();
+const carrosAbiertos = new Set();
+let otrosAbiertos = false;
 function renderCatalogo() {
   const texto = busquedaEl.value;
   const categoriaSeleccionada = filtroCategoriaEl.value;
   const estado = filtroEstadoEl.value;
-
+  const filtrando = Boolean(texto.trim() || categoriaSeleccionada !== "Todas" || estado !== "Todos");
   catalogoEl.innerHTML = "";
-
+  let hayResultados = false;
   categorias
     .filter(cat => categoriaSeleccionada === "Todas" || cat.nombre === categoriaSeleccionada)
     .forEach(cat => {
       const itemsFiltrados = cat.items.filter(item => itemCoincide(item, texto, estado));
-      if (!itemsFiltrados.length) return;
-
-      const section = document.createElement("section");
-      section.className = "card categoria";
-      section.innerHTML = `
-        <div class="categoria-head categoria-${cat.color}">
-          <div style="display:flex;gap:12px;align-items:center;">
-            <div style="font-size:2rem">${cat.icono}</div>
-            <div>
-              <h3>${cat.nombre}</h3>
-              <p style="opacity:.92;margin-top:4px">${cat.descripcion}</p>
-            </div>
-          </div>
-        </div>
-        <div class="categoria-body"></div>
-      `;
-
-      const body = section.querySelector(".categoria-body");
-      if (cat.nombre === CART_CATEGORY) {
-        renderCategoriaCarros(cat, body, texto, estado);
-      } else {
-        itemsFiltrados.forEach(item => body.appendChild(crearTarjetaItem(item, cat)));
+      if(!itemsFiltrados.length) return;
+      hayResultados = true;
+      const detalle = document.createElement("details");
+      detalle.className = "categoria-desplegable";
+      detalle.dataset.categoria = cat.nombre;
+      detalle.open = categoriasAbiertas.has(cat.nombre) || filtrando;
+      const disponibles = cat.items.filter(x=>x.tipo !== "carro" && x.estado === "Disponible").length;
+      const equipos = cat.items.filter(x=>x.tipo !== "carro").length;
+      const summary = document.createElement("summary");
+      const heading = document.createElement("div");
+      heading.className = "cat-heading";
+      const symbol = document.createElement("span");
+      symbol.className = "cat-symbol";
+      symbol.textContent = cat.icono;
+      const textoCabecera = document.createElement("div");
+      const titulo = document.createElement("strong");
+      titulo.textContent = cat.nombre;
+      const ayuda = document.createElement("small");
+      ayuda.textContent = cat.nombre === CART_CATEGORY ? "7 carros · pulsa para consultar" : "Pulsa para explorar los materiales";
+      textoCabecera.append(titulo,ayuda);
+      heading.append(symbol,textoCabecera);
+      const status = document.createElement("span");
+      status.className = "cat-status";
+      const n = document.createElement("span");
+      n.className = "cat-count";
+      n.textContent = disponibles+" disponibles / "+equipos;
+      const chevron = document.createElement("span");
+      chevron.className = "cat-chevron";
+      chevron.textContent = "⌄";
+      status.append(n,chevron);
+      summary.append(heading,status);
+      detalle.appendChild(summary);
+      const body = document.createElement("div");
+      body.className = "categoria-details";
+      if(cat.nombre === CART_CATEGORY){
+        renderCategoriaCarros(cat,body,texto,estado);
+      }else{
+        const grid=document.createElement("div");
+        grid.className="otros-grid";
+        cat.items.filter(x=>itemCoincide(x,texto,estado)).forEach(item=>grid.appendChild(crearTarjetaItem(item,cat)));
+        body.appendChild(grid);
       }
-      catalogoEl.appendChild(section);
+      detalle.appendChild(body);
+      detalle.addEventListener("toggle",()=>{
+        if(detalle.open) categoriasAbiertas.add(cat.nombre);
+        else categoriasAbiertas.delete(cat.nombre);
+      });
+      catalogoEl.appendChild(detalle);
     });
-
-  document.querySelectorAll(".mini-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      categoriaReservaEl.value = decodeURIComponent(btn.dataset.categoria);
+  if(!hayResultados){
+    const msg=document.createElement("p");
+    msg.className="card cat-empty";
+    msg.textContent="No se han encontrado materiales con esos filtros. Prueba con otra categoría o estado.";
+    catalogoEl.appendChild(msg);
+  }
+  catalogoEl.querySelectorAll(".mini-btn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      categoriaReservaEl.value=decodeURIComponent(btn.dataset.categoria);
       poblarMaterialesReserva();
-      materialReservaEl.value = decodeURIComponent(btn.dataset.material);
-      if(btn.dataset.elegirUnidades === "1"){
-        const parent = decodeURIComponent(btn.dataset.material);
-        const included = categorias.flatMap(c=>c.items).filter(p=>p.tipo==="portatil"&&p.carro===parent&&p.estado==="Disponible");
-        formMsgEl.textContent = "El carro se solicitará con "+included.length+" equipos libres. Los demás quedan excluidos.";
+      materialReservaEl.value=decodeURIComponent(btn.dataset.material);
+      if(btn.dataset.elegirUnidades==="1"){
+        const parent=decodeURIComponent(btn.dataset.material);
+        const included=categorias.flatMap(c=>c.items).filter(p=>p.tipo==="portatil"&&p.carro===parent&&p.estado==="Disponible");
+        formMsgEl.textContent="El carro se solicitará con "+included.length+" equipos libres. Los demás quedan excluidos.";
       }
-      document.getElementById("reserva").scrollIntoView({ behavior: "smooth" });
+      document.getElementById("reserva").scrollIntoView({behavior:"smooth"});
     });
   });
 }

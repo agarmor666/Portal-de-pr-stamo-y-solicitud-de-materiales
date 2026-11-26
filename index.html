@@ -390,9 +390,9 @@ function poblarMaterialesReserva() {
   const crearOpcion = (item, destino) => {
     const opt = document.createElement("option");
     opt.value = item.nombre;
-    opt.disabled = item.estado !== "Disponible" || (item.tipo === "carro" && item.parcial);
+    opt.disabled = item.estado !== "Disponible";
     const displayName = item.sustituidoPor ? `${item.nombre} (sustituido por ${item.sustituidoPor})` : item.nombre;
-    opt.textContent = item.tipo === "carro" && item.parcial ? `${displayName} — reserva los equipos libres por separado` : (item.estado === "Disponible" ? displayName : `${displayName} — no disponible`);
+    opt.textContent = item.tipo === "carro" && item.parcial ? `${displayName} — reservar carro con ${item.disponibles} equipos disponibles` : (item.estado === "Disponible" ? displayName : `${displayName} — no disponible`);
     destino.appendChild(opt);
   };
 
@@ -454,10 +454,10 @@ function crearTarjetaItem(item, categoria, claseExtra = "") {
       <p><strong>Contenido:</strong> ${textoDisponibles}</p>
       <p><strong>Ubicación:</strong> ${item.ubicacion}</p>
       ${item.responsableInventario && item.estado === "Prestado" ? `<p><strong>Responsable del préstamo previo:</strong> ${item.responsableInventario}</p>` : ""}
-      ${seleccionarUnidades ? `<p>Hay equipos prestados: reserva solo las unidades libres.</p>` : ""}
+      ${seleccionarUnidades ? `<p>Se puede reservar el carro con ${item.disponibles} equipos libres, excluyendo los prestados.</p>` : ""}
       ${notaCatalogacion}
     </div>
-    <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(categoria.nombre)}" data-elegir-unidades="${seleccionarUnidades ? "1" : "0"}" ${sePuedeReservar ? "" : "disabled"}>${sePuedeReservar ? (seleccionarUnidades ? "Elegir equipos libres" : (item.tipo === "carro" ? "Reservar el carro completo" : "Reservar este material")) : "No disponible"}</button>
+    <button class="mini-btn" data-material="${encodeURIComponent(item.nombre)}" data-categoria="${encodeURIComponent(categoria.nombre)}" data-elegir-unidades="${seleccionarUnidades ? "1" : "0"}" ${sePuedeReservar ? "" : "disabled"}>${sePuedeReservar ? (seleccionarUnidades ? `Reservar carro con ${item.disponibles} equipos` : (item.tipo === "carro" ? "Reservar el carro completo" : "Reservar este material")) : "No disponible"}</button>
   `;
   return article;
 }
@@ -545,13 +545,11 @@ function renderCatalogo() {
     btn.addEventListener("click", () => {
       categoriaReservaEl.value = decodeURIComponent(btn.dataset.categoria);
       poblarMaterialesReserva();
+      materialReservaEl.value = decodeURIComponent(btn.dataset.material);
       if(btn.dataset.elegirUnidades === "1"){
         const parent = decodeURIComponent(btn.dataset.material);
-        materialReservaEl.value = "";
-        formMsgEl.textContent = "Selecciona un portátil libre del carro. Los equipos prestados no se pueden reservar.";
-        materialReservaEl.focus();
-      } else {
-        materialReservaEl.value = decodeURIComponent(btn.dataset.material);
+        const included = categorias.flatMap(c=>c.items).filter(p=>p.tipo==="portatil"&&p.carro===parent&&p.estado==="Disponible");
+        formMsgEl.textContent = "El carro se solicitará con "+included.length+" equipos libres. Los demás quedan excluidos.";
       }
       document.getElementById("reserva").scrollIntoView({ behavior: "smooth" });
     });
@@ -588,6 +586,7 @@ async function enviarReserva(event) {
   const fechaFinValor = document.getElementById("fechaFin").value;
   const mismoDia = fechaInicioValor === fechaFinValor;
   const materialSeleccionado = buscarItem(materialReservaEl.value);
+  const equiposCarro = materialSeleccionado?.tipo === "carro" ? categorias.flatMap(c=>c.items).filter(p=>p.tipo==="portatil"&&p.carro===materialSeleccionado.nombre&&p.estado==="Disponible").map(p=>p.nombre) : [];
 
   const payload = {
     action: "submitReservation",
@@ -597,6 +596,7 @@ async function enviarReserva(event) {
     categoriaReserva: categoriaReservaEl.value,
     materialReserva: materialReservaEl.value,
     carroReserva: materialSeleccionado?.carro || "",
+    equiposCarro: equiposCarro,
     fechaInicio: fechaInicioValor,
     tramoInicio: mismoDia ? document.getElementById("tramoInicio").value : "",
     fechaFin: fechaFinValor,

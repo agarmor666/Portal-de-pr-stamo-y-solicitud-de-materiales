@@ -49,7 +49,7 @@ code{background:#eef2ff;padding:2px 6px;border-radius:8px}
 @media (max-width:900px){.hero-grid,.reserva-grid,.tools-grid,.form-grid{grid-template-columns:1fr} .stats{grid-template-columns:1fr} h1{font-size:1.7rem}.carro-bloque{padding:12px}.portatiles-grid,.otros-grid{grid-template-columns:1fr}}
 
 .reserva-grid{grid-template-columns:1fr}
-.private-panel{margin-top:24px}
+.private-panel{margin-top:24px;scroll-margin-top:120px}
 .login-row,.admin-head,.admin-filters,.admin-actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .login-row input{max-width:380px}.admin-head{justify-content:space-between}.admin-head h2{margin-bottom:4px}
 .admin-filters{margin:16px 0}.admin-filters input{flex:2;min-width:220px}.admin-filters select{flex:1;min-width:210px}
@@ -646,9 +646,15 @@ async function apiPost(payload) {
   return result;
 }
 
+function irADireccion(behavior="auto") {
+  // Se calcula la posición cuando el catálogo ya tiene su altura definitiva.
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (!direccionPanelEl.hidden) direccionPanelEl.scrollIntoView({behavior,block:"start"});
+  }));
+}
 function abrirDireccion() {
   direccionPanelEl.hidden = false;
-  direccionPanelEl.scrollIntoView({behavior:"smooth",block:"start"});
+  irADireccion("smooth");
   if (adminSession) cargarAdmin();
 }
 
@@ -819,7 +825,8 @@ document.getElementById("admin-estado").addEventListener("change",renderAdmin);
 document.getElementById("btn-confirmar-devolucion").addEventListener("click",comunicarDevolucion);
 
 const pageParams = new URLSearchParams(location.search);
-if (pageParams.get("direccion") === "1") abrirDireccion();
+const accesoDirectoDireccion = pageParams.get("direccion") === "1" || Boolean(pageParams.get("reserva"));
+if (accesoDirectoDireccion) abrirDireccion();
 if (pageParams.get("devolver")) {
   devolucionPanelEl.hidden = false;
   document.getElementById("devolucion-id").textContent = pageParams.get("devolver");
@@ -841,7 +848,11 @@ aplicarDisponibilidad({ unavailable: [] });
 poblarMaterialesReserva();
 actualizarTramosPorFechas();
 renderCatalogo();
-cargarDisponibilidad();
+cargarDisponibilidad().finally(() => {
+  // El catálogo se dibuja de forma asíncrona. Desplazar antes de ello
+  // deja la pantalla en mitad de los equipos, en lugar de en Dirección.
+  if (accesoDirectoDireccion) irADireccion("auto");
+});
 setInterval(cargarDisponibilidad, 60000);
 </script>
 </body>

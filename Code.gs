@@ -199,7 +199,8 @@ function doGet(e) {
       return jsonResponse_({
         result:'success',ok:true,
         unavailable:availability.unavailable,
-        reservedCarts:availability.reservedCarts
+        reservedCarts:availability.reservedCarts,
+        supportsPartialCart:true
       });
     }
     if (action === 'manage') {

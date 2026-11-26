@@ -462,7 +462,7 @@ function sendPendingEmailToRequester_(r) {
       '<p>Hola, <strong>' + escapeHtml_(r['Nombre y apellidos']) + '</strong>.</p>' +
       '<p>La solicitud está <strong>pendiente de aceptación por Dirección</strong>.</p>' +
       summaryHtml_(r) +
-      '<p>Conserva este código: <strong>' + escapeHtml_(r['ID solicitud']) + '</strong>.</p>'));
+      '<p>Conserva este número de préstamo: <strong>' + escapeHtml_(r['ID solicitud']) + '</strong>.</p>'));
 }
 
 function sendNewRequestEmailToAdmin_(r) {
@@ -759,7 +759,7 @@ function summaryHtml_(r) {
   const slotStart = String(r['Tramo inicio'] || '');
   const slotEnd = String(r['Tramo fin'] || '');
   return '<table style="border-collapse:collapse;width:100%;max-width:620px">' +
-    summaryRow_('Código',r['ID solicitud']) + summaryRow_('Solicitante',r['Nombre y apellidos']) +
+    summaryRow_('N.º de préstamo',r['ID solicitud']) + summaryRow_('Solicitante',r['Nombre y apellidos']) +
     summaryRow_('Curso, grupo o uso',r['Curso o grupo']) + summaryRow_('Material',r['Material']) +
     (r['Equipos incluidos'] ? summaryRow_('Equipos incluidos', (function(){try{return JSON.parse(r['Equipos incluidos']).join(', ');}catch(e){return r['Equipos incluidos'];}})()) : '') +
     summaryRow_('Inicio',start + (slotStart ? ' · ' + slotStart : '')) +
